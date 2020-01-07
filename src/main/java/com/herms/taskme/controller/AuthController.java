@@ -7,7 +7,6 @@ import com.herms.taskme.security.JwtTokenProvider;
 
 import com.herms.taskme.service.CustomUserDetailsService;
 import com.herms.taskme.service.UserService;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,8 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
