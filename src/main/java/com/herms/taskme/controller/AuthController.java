@@ -48,7 +48,6 @@ public class AuthController {
 
     @RequestMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public LoginResponse login(@RequestBody User user) throws ServletException {
-
         if (user == null || user.getUsername() == null || user.getPassword() == null) {
             throw new ServletException("Username and passwords are mandatory fields.");
         }
