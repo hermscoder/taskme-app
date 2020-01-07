@@ -1,0 +1,96 @@
+package com.herms.taskme.model;
+
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Entity
+@Table(name = "PRICE_TABLE")
+@XmlRootElement
+@NamedQueries({
+        @NamedQuery(name = "PriceTable.findAll", query = "SELECT priceTable FROM PriceTable priceTable")
+        , @NamedQuery(name = "PriceTable.findByName", query = "SELECT priceTable FROM PriceTable priceTable WHERE priceTable.name = :name")})
+public class PriceTable implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+
+//    @Id
+//    @GeneratedValue(generator = "SQ_PRICE_TABLE")
+//    @SequenceGenerator(name = "SQ_PRICE_TABLE", sequenceName = "SQ_PRICE_TABLE", allocationSize = 1)
+    @Id
+    @GeneratedValue
+    private Long id;
+    @Size(min = 1, max = 30)
+    @Column(name = "NAME", nullable = false)
+    private String name;
+    @Size(min = 1, max = 150)
+    @Column(name = "DESCRIPTION", nullable = false)
+    private String description;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "priceTable", cascade = CascadeType.ALL)
+    private List<PriceTableItem> priceTableItemList = new ArrayList<>();
+
+    public PriceTable(){
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<PriceTableItem> getPriceTableItemList() {
+        return priceTableItemList;
+    }
+
+    public void setPriceTableItemList(List<PriceTableItem> priceTableItemList) {
+        this.priceTableItemList = priceTableItemList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PriceTable)) return false;
+        PriceTable that = (PriceTable) o;
+        return Objects.equals(getId(), that.getId()) &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getDescription(), that.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getDescription());
+    }
+
+    @Override
+    public String toString() {
+        return "PriceTable{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
+}

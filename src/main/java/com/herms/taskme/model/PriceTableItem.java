@@ -1,0 +1,110 @@
+package com.herms.taskme.model;
+
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Objects;
+
+@Entity
+@Table(name = "PRICE_TABLE_ITEM")
+@XmlRootElement
+@NamedQueries({
+        @NamedQuery(name = "PriceTableItem.findAll", query = "SELECT m FROM PriceTableItem m")
+        , @NamedQuery(name = "PriceTableItem.findByName", query = "SELECT m FROM PriceTableItem m WHERE m.name = :name")})
+public class PriceTableItem implements Serializable{
+
+    private static final long serialVersionUID = 1L;
+
+//    @Id
+//    @GeneratedValue(generator = "SQ_PRICE_TABLE_ITEM")
+//    @SequenceGenerator(name = "SQ_PRICE_TABLE_ITEM", sequenceName = "SQ_PRICE_TABLE", allocationSize = 1)
+    @Id
+    @GeneratedValue
+    private Long id;
+    @Size(min = 1, max = 30)
+    @Column(name = "NAME", nullable = false)
+    private String name;
+    @Size(min = 1, max = 150)
+    @Column(name = "DESCRIPTION", nullable = false)
+    private String description;
+    @Column(name = "PRICE", nullable = false)
+    private BigDecimal price;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRICE_TABLE", referencedColumnName = "ID")
+    private PriceTable priceTable;
+
+    public PriceTableItem(){
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    @XmlTransient
+    public PriceTable getPriceTable() {
+        return priceTable;
+    }
+
+    public void setPriceTable(PriceTable priceTable) {
+        this.priceTable = priceTable;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PriceTableItem)) return false;
+        PriceTableItem that = (PriceTableItem) o;
+        return Objects.equals(getId(), that.getId()) &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getDescription(), that.getDescription()) &&
+                Objects.equals(getPrice(), that.getPrice());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getDescription(), getPrice());
+    }
+
+    @Override
+    public String toString() {
+        return "PriceTableItem{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                '}';
+    }
+}

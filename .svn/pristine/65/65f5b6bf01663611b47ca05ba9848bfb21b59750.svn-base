@@ -1,0 +1,9 @@
+package com.herms.taskme.repository;
+
+import com.herms.taskme.model.TaskSomeone;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface TaskSomeoneRepository extends CrudRepository<TaskSomeone, Long> {
+}
