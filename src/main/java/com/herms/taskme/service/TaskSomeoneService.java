@@ -7,6 +7,10 @@ import com.herms.taskme.model.User;
 import com.herms.taskme.repository.TaskSomeoneRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,11 @@ public class TaskSomeoneService {
         List<TaskSomeone> taskSomeoneList = new ArrayList<>();
         taskSomeoneRepository.findAllByOrderByCreatedOnDesc().forEach(taskSomeoneList::add);
         return taskSomeoneList;
+    }
+
+    public Page<TaskSomeone> getAllTaskSomeonePaginated(Integer pageNumber, Integer linesPerPage, String orderBy, String direction){
+        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        return taskSomeoneRepository.findAllByOrderByCreatedOnDesc(pageRequest);
     }
 
     public TaskSomeone getTaskSomeone(Long id){

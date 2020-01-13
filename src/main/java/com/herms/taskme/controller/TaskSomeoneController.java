@@ -8,6 +8,7 @@ import com.herms.taskme.model.User;
 import com.herms.taskme.service.CustomUserDetailsService;
 import com.herms.taskme.service.TaskSomeoneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,17 @@ public class TaskSomeoneController {
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone")
     public List<TaskSomeone> getAllTaskSomeone(){
         return taskSomeoneService.getAllTaskSomeone();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/tasksomeona")
+    public ResponseEntity<Page<TaskSomeone>> findPage(
+            @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
+            @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
+            @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
+            @RequestParam(value="direction", defaultValue = "DESC") String direction) {
+        Page<TaskSomeone> pontoRotaList = taskSomeoneService.getAllTaskSomeonePaginated(pageNumber, linesPerPage, orderBy, direction);
+
+        return ResponseEntity.ok(pontoRotaList);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/listtasks")
