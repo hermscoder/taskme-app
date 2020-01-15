@@ -37,7 +37,8 @@ public class TaskSomeoneController {
             @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
             @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
             @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
-            @RequestParam(value="direction", defaultValue = "DESC") String direction) {
+            @RequestParam(value="direction", defaultValue = "DESC") String direction,
+            @RequestParam(value="term", defaultValue = "DESC") String term) {
         Page<TaskSomeone> pontoRotaList = taskSomeoneService.getAllTaskSomeonePaginated(pageNumber, linesPerPage, orderBy, direction);
 
         return ResponseEntity.ok(pontoRotaList);
