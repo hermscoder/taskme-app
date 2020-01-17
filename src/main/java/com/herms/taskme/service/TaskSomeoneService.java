@@ -42,19 +42,16 @@ public class TaskSomeoneService {
         return taskSomeoneList;
     }
 
-    public Page<TaskSomeone> getAllTaskSomeonePaginated(Integer pageNumber, Integer linesPerPage, String orderBy, String direction){
-        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        return taskSomeoneRepository.findAllByOrderByCreatedOnDesc(pageRequest);
+    public Page<TaskSomeone> getAllTaskSomeonePaginated(Pageable pageable, String searchTerm){
+        return taskSomeoneRepository.findByTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, searchTerm);
     }
 
     public TaskSomeone getTaskSomeone(Long id){
         return taskSomeoneRepository.findById(id).get();
     }
 
-    public List<TaskSomeone> getAllTaskSomeoneCreatedBy(User user){
-        List<TaskSomeone> taskSomeoneList = new ArrayList<>();
-        taskSomeoneRepository.findAllByUserOrderByCreatedOnDesc(user).forEach(taskSomeoneList::add);
-        return taskSomeoneList;
+    public Page<TaskSomeone> getAllTaskSomeoneCreatedByUserIdPaginated(Pageable pageable, Long userId, String term){
+        return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
     }
 
     public TaskSomeone addTaskSomeone(TaskSomeone taskSomeone){

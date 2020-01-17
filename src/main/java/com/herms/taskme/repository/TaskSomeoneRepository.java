@@ -16,7 +16,8 @@ public interface TaskSomeoneRepository extends CrudRepository<TaskSomeone, Long>
 
     public List<TaskSomeone> findAllByOrderByCreatedOnDesc();
     public Page<TaskSomeone> findAllByOrderByCreatedOnDesc(Pageable pageable);
+    public Page<TaskSomeone> findByTitleContainingIgnoreCaseOrderByCreatedOnDesc(Pageable pageable, String term);
 
-    public List<TaskSomeone> findAllByUserOrderByCreatedOnDesc(User user);
+    public Page<TaskSomeone> findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(Pageable pageable, Long userId, String term);
     public Page<TaskSomeone> findAllByUserOrderByCreatedOnDesc(User user, Pageable pageable);
 }

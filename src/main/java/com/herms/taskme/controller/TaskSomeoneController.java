@@ -1,14 +1,13 @@
 package com.herms.taskme.controller;
 import com.herms.taskme.dto.UserDTO;
-import com.herms.taskme.model.CloudinaryManager;
-import com.herms.taskme.model.Media;
-import com.herms.taskme.model.TaskSomeone;
+import com.herms.taskme.model.*;
 import com.herms.taskme.dto.TaskSomeoneForListDTO;
-import com.herms.taskme.model.User;
 import com.herms.taskme.service.CustomUserDetailsService;
 import com.herms.taskme.service.TaskSomeoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +32,15 @@ public class TaskSomeoneController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeona")
-    public ResponseEntity<Page<TaskSomeone>> findPage(
+    public ResponseEntity<Page<TaskSomeone>> getTaskSomeonePages(
             @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
             @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
             @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
             @RequestParam(value="direction", defaultValue = "DESC") String direction,
-            @RequestParam(value="term", defaultValue = "DESC") String term) {
-        Page<TaskSomeone> pontoRotaList = taskSomeoneService.getAllTaskSomeonePaginated(pageNumber, linesPerPage, orderBy, direction);
+            @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) {
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        Page<TaskSomeone> pontoRotaList = taskSomeoneService.getAllTaskSomeonePaginated(pageRequest, searchTerm);
 
         return ResponseEntity.ok(pontoRotaList);
     }
@@ -91,24 +92,40 @@ public class TaskSomeoneController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/createdTasks")
-    public ResponseEntity<List<TaskSomeoneForListDTO>> getCurrentUserCreatedTasks() throws Exception {
+    public ResponseEntity<Page<TaskSomeone>> getCurrentUserCreatedTasks(
+            @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
+            @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
+            @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
+            @RequestParam(value="direction", defaultValue = "DESC") String direction,
+            @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) throws Exception {
         User principal = customUserDetailsService.getLoggedUser();
-        return getCreatedTasks(principal.getId());
-    }
 
+        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTaskSomeoneCreatedByUserIdPaginated(pageRequest, principal.getId(), searchTerm);
+
+        return new ResponseEntity<>(taskSomeoneCreatedBy, HttpStatus.OK);
+    }
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/createdTasks/{userid}")
-    public ResponseEntity<List<TaskSomeoneForListDTO>> getCreatedTasks(@PathVariable Long userid) throws Exception {
+    public ResponseEntity<Page<TaskSomeone>> getCreatedTasksPaginated(@PathVariable Long userid,
+                                                                       @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
+                                                                       @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
+                                                                       @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
+                                                                       @RequestParam(value="direction", defaultValue = "DESC") String direction,
+                                                                       @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) throws Exception {
 
         User principal = customUserDetailsService.getLoggedUser();
         if(userid == null || !userid.equals(principal.getId())){
             throw new Exception("You don't have access to this function");
         }
-        List<TaskSomeone> taskSomeoneList = taskSomeoneService.getAllTaskSomeoneCreatedBy(principal);
-        List<TaskSomeoneForListDTO> taskSomeoneToReturn = new ArrayList<>();
-        if(taskSomeoneList != null && !taskSomeoneList.isEmpty()){
-            taskSomeoneToReturn = taskSomeoneList.stream().map(taskSomeone -> new TaskSomeoneForListDTO(taskSomeone)).collect(Collectors.toList());
-        }
-        return new ResponseEntity<>(taskSomeoneToReturn, HttpStatus.OK);
+//        List<TaskSomeone> taskSomeoneList = taskSomeoneService.getAllTaskSomeoneCreatedBy(principal);
+//        List<TaskSomeoneForListDTO> taskSomeoneToReturn = new ArrayList<>();
+//        if(taskSomeoneList != null && !taskSomeoneList.isEmpty()){
+//            taskSomeoneToReturn = taskSomeoneList.stream().map(taskSomeone -> new TaskSomeoneForListDTO(taskSomeone)).collect(Collectors.toList());
+//        }
+        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTaskSomeonePaginated(pageRequest, searchTerm);
+
+        return new ResponseEntity<>(taskSomeoneCreatedBy, HttpStatus.OK);
 
     }
 
