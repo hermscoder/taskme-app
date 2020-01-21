@@ -19,7 +19,7 @@ public class TaskSomeoneForListDTO {
         title = taskSomeone.getTitle();
         description = taskSomeone.getDescription();
         location = taskSomeone.getLocation();
-        user = taskSomeone.getUser();
+        user = new UserDTO(taskSomeone.getUser());
         mediaList = taskSomeone.getMediaList();
         createdOn = taskSomeone.getCreatedOn();
     }
@@ -32,7 +32,7 @@ public class TaskSomeoneForListDTO {
 
     private String location;
 
-    private User user;
+    private UserDTO user;
 
     private List<Media> mediaList;
 
@@ -70,11 +70,11 @@ public class TaskSomeoneForListDTO {
         this.location = location;
     }
 
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         this.user = user;
     }
 

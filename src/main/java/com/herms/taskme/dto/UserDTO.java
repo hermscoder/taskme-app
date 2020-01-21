@@ -1,8 +1,13 @@
 package com.herms.taskme.dto;
 
 import com.herms.taskme.model.Media;
+import com.herms.taskme.model.User;
+import com.herms.taskme.util.Converter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -15,8 +20,6 @@ public class UserDTO implements Serializable {
     private String givenName;
 
     private String familyName;
-
-    private String username;
 
     private String contact;
 
@@ -32,6 +35,20 @@ public class UserDTO implements Serializable {
 
     public UserDTO() {
 
+    }
+
+    public UserDTO(User user) {
+        this.id = user.getId();
+        this.givenName = user.getGivenName();
+        this.familyName = user.getFamilyName();
+        this.contact = user.getContact();
+        this.address = user.getAddress();
+        this.createdOn = user.getCreatedOn();
+        this.birthDate = user.getBirthDate();
+        this.profilePhoto = user.getProfilePhoto();
+
+        Period diff = Period.between(Converter.convertToLocalDateViaSqlDate(user.getBirthDate()), LocalDate.now());
+        this.age = diff.getYears();
     }
 
     public Long getId() {
@@ -90,14 +107,6 @@ public class UserDTO implements Serializable {
         this.birthDate = birthDate;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public Date getCreatedOn() {
         return createdOn;
     }
@@ -138,11 +147,11 @@ public class UserDTO implements Serializable {
                 "id=" + id +
                 ", givenName='" + givenName + '\'' +
                 ", familyName='" + familyName + '\'' +
-                ", username='" + username + '\'' +
                 ", contact='" + contact + '\'' +
                 ", address='" + address + '\'' +
                 ", createdOn=" + createdOn +
                 ", birthDate=" + birthDate +
+                ", age=" + age +
                 '}';
     }
 }
