@@ -12,6 +12,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import javax.validation.ConstraintViolation;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +129,12 @@ public class ApiError {
     }
 
 
-    abstract class ApiSubError {
+    abstract class ApiSubError implements Serializable{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 12512L;
 
     }
 
