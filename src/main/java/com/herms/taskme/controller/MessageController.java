@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.herms.taskme.dto.MessageDTO;
 import com.herms.taskme.model.Conversation;
 import com.herms.taskme.model.Message;
 import com.herms.taskme.model.User;
@@ -32,7 +33,7 @@ public class MessageController {
     private CustomUserDetailsService customUserDetailsService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/message/{conversationId}")
-    public ResponseEntity<Page<Message>> getMessages(@PathVariable Long conversationId,
+    public ResponseEntity<Page<MessageDTO>> getMessages(@PathVariable Long conversationId,
                                                                        @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
                                                                        @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
                                                                        @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
@@ -47,20 +48,20 @@ public class MessageController {
 
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         Page<Message> convMessagesList = messageService.getMessagesFromConvPaginated(pageRequest, conversationId);
-
-        return new ResponseEntity<>(convMessagesList, HttpStatus.OK);
+        
+        return new ResponseEntity<>(convMessagesList.map(MessageDTO::new), HttpStatus.OK);
     }
     
     @RequestMapping(method = RequestMethod.POST, value = "/message")
-    public ResponseEntity<Message> createConversationWith(@RequestBody Message message) throws Exception {
+    public ResponseEntity<MessageDTO> createMessageWith(@RequestBody Message message) throws Exception {
 
         User principal = customUserDetailsService.getLoggedUser();
         
-        if(principal == null ||  !message.getConversation().getUserList().stream().map(User::getId).collect(Collectors.toList()).contains(principal.getId())){
+        if(principal == null ||  !message.getSender().equals(principal.getId())){
             throw new Exception("You don't have access to this function");
         }
         
-        return new ResponseEntity<>(messageService.addMessage(message), HttpStatus.OK);
+        return new ResponseEntity<>(new MessageDTO(messageService.addMessage(message)), HttpStatus.OK);
 
     }
 }

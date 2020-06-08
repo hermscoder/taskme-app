@@ -25,7 +25,7 @@ public class Message implements Serializable{
     @Column(name = "CONTENT", nullable = false)
     private String content;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "T_USER", referencedColumnName = "ID")
+    @JoinColumn(name = "SENDER", referencedColumnName = "ID")
     private User sender;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CONVERSATION", referencedColumnName = "ID")

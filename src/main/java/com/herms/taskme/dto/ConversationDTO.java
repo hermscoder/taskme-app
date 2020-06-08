@@ -1,35 +1,25 @@
 package com.herms.taskme.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.herms.taskme.model.Message;
-
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.Type;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
-public class ConversationForListDTO implements Serializable{
+public class ConversationDTO implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
     private Boolean hasUnreadMessages;
-    private List<Message> messagesList;
-    private List<UserDTO> userList;
+    private List<MessageDTO> messagesList;
+    private Map<Long, UserDTO> userMap;
     private Date createdOn;
 
-    public ConversationForListDTO() {
+    public ConversationDTO() {
     	messagesList = new ArrayList<>();
-    	userList = new ArrayList<>();
+    	userMap = new HashMap<>();
     }
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -38,32 +28,27 @@ public class ConversationForListDTO implements Serializable{
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
 
-	public List<Message> getMessagesList() {
+	public List<MessageDTO> getMessagesList() {
 		return messagesList;
 	}
-
-	public void setMessagesList(List<Message> messagesList) {
+	public void setMessagesList(List<MessageDTO> messagesList) {
 		this.messagesList = messagesList;
 	}
-
-	public List<UserDTO> getUserList() {
-		return userList;
-	}
-
-	public void setUserList(List<UserDTO> userList) {
-		this.userList = userList;
-	}
-
 	
+	public Map<Long, UserDTO> getUserMap() {
+		return userMap;
+	}
+	public void setUserMap(Map<Long, UserDTO> userMap) {
+		this.userMap = userMap;
+	}
+
 	public Boolean getHasUnreadMessages() {
 		return hasUnreadMessages;
 	}
-
 	public void setHasUnreadMessages(Boolean hasUnreadMessages) {
 		this.hasUnreadMessages = hasUnreadMessages;
 	}
@@ -71,7 +56,6 @@ public class ConversationForListDTO implements Serializable{
 	public Date getCreatedOn() {
 		return createdOn;
 	}
-
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
 	}
@@ -95,7 +79,7 @@ public class ConversationForListDTO implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ConversationForListDTO other = (ConversationForListDTO) obj;
+		ConversationDTO other = (ConversationDTO) obj;
 		if (createdOn == null) {
 			if (other.createdOn != null)
 				return false;

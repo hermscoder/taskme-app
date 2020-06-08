@@ -1,17 +1,12 @@
 package com.herms.taskme.service;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.herms.taskme.dto.ConversationForListDTO;
 import com.herms.taskme.model.Conversation;
 import com.herms.taskme.model.User;
 import com.herms.taskme.repository.ConversationRepository;
