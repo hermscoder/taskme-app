@@ -15,5 +15,5 @@ import com.herms.taskme.model.Message;
 public interface MessageRepository extends CrudRepository<Message, Long>, PagingAndSortingRepository<Message, Long> {
     public Page<Message> findAllByConversationIdOrderBySentTime(Pageable pageable, Long conversationId);
     
-    public List<Message> findFirst20ByConversationIdOrderBySentTime(Long conversationId);
+    public List<Message> findFirst20ByConversationIdOrderByIdDesc(Long conversationId);
 }

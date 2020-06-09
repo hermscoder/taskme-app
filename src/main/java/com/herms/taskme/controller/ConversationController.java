@@ -46,10 +46,17 @@ public class ConversationController {
 
         User principal = customUserDetailsService.getLoggedUser();
         
-        if( principal == null ||  !conversationDTO.getUserMap().containsKey(principal.getId()) ){
+        if( principal == null){
             throw new Exception("You don't have access to this function");
         }
+        
+        if(conversationDTO.getParticipants()
+        					.stream().noneMatch(user -> principal.getId().equals(user.getId()))) {
+        	conversationDTO.getParticipants().add(new UserDTO(principal));
+        }
+        conversationDTO.setHasUnreadMessages(true);
         Conversation conversation = conversationConverters.fromConversationtDTO(conversationDTO);
+        
         conversationDTO = conversationConverters.toConversationtDTO(conversationService.addConversation(conversation));
         return new ResponseEntity<>(conversationDTO, HttpStatus.OK);
 

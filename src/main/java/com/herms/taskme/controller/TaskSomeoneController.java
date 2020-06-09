@@ -118,11 +118,6 @@ public class TaskSomeoneController {
         if(userid == null || !userid.equals(principal.getId())){
             throw new Exception("You don't have access to this function");
         }
-//        List<TaskSomeone> taskSomeoneList = taskSomeoneService.getAllTaskSomeoneCreatedBy(principal);
-//        List<TaskSomeoneForListDTO> taskSomeoneToReturn = new ArrayList<>();
-//        if(taskSomeoneList != null && !taskSomeoneList.isEmpty()){
-//            taskSomeoneToReturn = taskSomeoneList.stream().map(taskSomeone -> new TaskSomeoneForListDTO(taskSomeone)).collect(Collectors.toList());
-//        }
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTaskSomeonePaginated(pageRequest, searchTerm);
 

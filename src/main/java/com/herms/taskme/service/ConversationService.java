@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.herms.taskme.model.Conversation;
@@ -38,5 +39,13 @@ public class ConversationService {
 
 		return conversationRepository.save(conversation);
 	}
+	
+	public Conversation updateConversation(Conversation conversation) {
+		return conversationRepository.save(conversation);
+	}
+	
+	public List<Conversation> findConversationByParticipants(List<Long> userIds) {
+		return conversationRepository.findByParticipants(userIds);
+	}	
 
 }

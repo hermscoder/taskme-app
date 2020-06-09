@@ -66,6 +66,11 @@ public class User implements Serializable {
     public User(){
 
     }
+    
+    //constructor for lazy fetched relations
+    public User(Long id) {
+    	this.id = id;
+    }
 
     public User(Long id, @Size(min = 1, max = 50) String givenName, @Size(min = 1, max = 50) String familyName, @Size(min = 1, max = 12) String contact, @Size(min = 1, max = 120) String address, @Size(min = 1, max = 20) String username, @Size(min = 1, max = 60) String password) {
         this.id = id;

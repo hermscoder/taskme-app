@@ -64,4 +64,17 @@ public class MessageController {
         return new ResponseEntity<>(new MessageDTO(messageService.addMessage(message)), HttpStatus.OK);
 
     }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/message/send/{targetUserId}")
+    public ResponseEntity<MessageDTO> sendMessageTo(@PathVariable Long targetUserId, @RequestBody MessageDTO message) throws Exception {
+
+        User principal = customUserDetailsService.getLoggedUser();
+        
+        if(principal == null ||  principal.getId().equals(targetUserId)){
+            throw new Exception("You don't have access to this function");
+        }
+        message.setUserSenderId(principal.getId());
+        return new ResponseEntity<>(new MessageDTO(messageService.sendMessageTo(targetUserId, message)), HttpStatus.OK);
+
+    }
 }

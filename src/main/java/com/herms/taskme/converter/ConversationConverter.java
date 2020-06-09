@@ -1,5 +1,7 @@
 package com.herms.taskme.converter;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -9,6 +11,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.comparator.Comparators;
 
 import com.herms.taskme.dto.ConversationDTO;
 import com.herms.taskme.dto.UserDTO;
@@ -17,6 +21,7 @@ import com.herms.taskme.model.Message;
 import com.herms.taskme.model.User;
 import com.herms.taskme.repository.MessageRepository;
 import com.herms.taskme.repository.UserRepository;
+import com.herms.taskme.service.ConversationService;
 
 @Service
 public class ConversationConverter{
@@ -32,6 +37,7 @@ public class ConversationConverter{
 	public ConversationConverter() {
 		this.modelMapper = new ModelMapper();
 		this.modelMapper.addConverter(toConversationDTOConv);
+		this.modelMapper.addConverter(fromConversationDTOConv);
 	}
 
 	public List<Conversation> fromConversationtDTO(List<ConversationDTO> conversationDTOsList) {
@@ -79,10 +85,15 @@ public class ConversationConverter{
 	         context.getDestination().setId(context.getSource().getId());
 	         context.getDestination().setHasUnreadMessages(context.getSource().getHasUnreadMessages());
 	         context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
-	         for (User user : context.getSource().getUserList()) {
+	         context.getSource().getUserList().stream().forEach(user -> {
 	            context.getDestination().getUserMap().put(user.getId(), new UserDTO(user));
-	         }
-	         List<Message> lastMsgs = messageRepository.findFirst20ByConversationIdOrderBySentTime(context.getSource().getId());
+	         });
+
+	         context.getSource().getUserList().stream().forEach(user -> {
+	        	 context.getDestination().getParticipants().add(new UserDTO(user));
+	         });
+	         List<Message> lastMsgs = messageRepository.findFirst20ByConversationIdOrderByIdDesc(context.getSource().getId());
+	         Collections.reverse(lastMsgs);
 	         context.getDestination().setMessagesList(messageConverters.toMessagetDTO(lastMsgs));
 	         
 	         return context.getDestination();
@@ -99,11 +110,19 @@ public class ConversationConverter{
 		         context.getDestination().setHasUnreadMessages(context.getSource().getHasUnreadMessages());
 		         context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
 
-		         for (Entry<Long, UserDTO> entry : context.getSource().getUserMap().entrySet()) {
-		            context.getDestination().getUserList().add(userRepository.getOne(entry.getKey()));
-		         }
+//		         for (Entry<Long, UserDTO> entry : context.getSource().getUserMap().entrySet()) {
+//		            context.getDestination().getUserList().add(userRepository.getOne(entry.getKey()));
+//		         }
+		         context.getSource().getParticipants().stream().forEach(userDTO -> {
+		        	 context.getDestination().getUserList().add(userRepository.getOne(userDTO.getId()));
+		         });
 		         
 		         context.getDestination().setMessagesList(messageConverters.fromMessagetDTO(context.getSource().getMessagesList()));
+		         
+		         //if its a new conversation, we have to connect both ends in order to cascade the persist
+		         if(context.getDestination().getId() == null) {
+		        	 context.getDestination().getMessagesList().forEach(msg -> msg.setConversation(context.getDestination()));
+		         }
 		         
 		         return context.getDestination();
 		      }

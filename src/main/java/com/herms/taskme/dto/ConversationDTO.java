@@ -16,10 +16,12 @@ public class ConversationDTO implements Serializable{
     private List<MessageDTO> messagesList;
     private Map<Long, UserDTO> userMap;
     private Date createdOn;
+    private List<UserDTO> participants;
 
     public ConversationDTO() {
     	messagesList = new ArrayList<>();
     	userMap = new HashMap<>();
+    	participants = new ArrayList<>();
     }
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -58,6 +60,13 @@ public class ConversationDTO implements Serializable{
 	}
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
+	}
+
+	public List<UserDTO> getParticipants() {
+		return participants;
+	}
+	public void setParticipants(List<UserDTO> participants) {
+		this.participants = participants;
 	}
 
 	@Override
