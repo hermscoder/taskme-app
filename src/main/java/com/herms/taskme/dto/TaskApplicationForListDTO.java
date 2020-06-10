@@ -2,38 +2,23 @@ package com.herms.taskme.dto;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.herms.taskme.converter.ApplicationStatusConverter;
 import com.herms.taskme.enums.ApplicationStatus;
-import com.herms.taskme.model.TaskApplication;
-import com.herms.taskme.model.TaskSomeone;
-import com.herms.taskme.model.User;
 
-public class TaskApplicationForListDTO {
+public class TaskApplicationForListDTO extends DataTransferObject {
 	
     private Long id;
     private UserDTO user;
-    private TaskSomeoneDetailsDTO taskSomeone;
+    private TaskSomeoneForListDTO taskSomeone;
     private Date createdOn;
     private ApplicationStatus status;
+    private MessageDTO applyingMessage;
     
-	public TaskApplicationForListDTO(TaskApplication addTaskApplication) {
+	public TaskApplicationForListDTO() {
 	}
 
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -41,23 +26,20 @@ public class TaskApplicationForListDTO {
 	public UserDTO getUser() {
 		return user;
 	}
-
 	public void setUser(UserDTO user) {
 		this.user = user;
 	}
 
-	public TaskSomeoneDetailsDTO getTaskSomeone() {
+	public TaskSomeoneForListDTO getTaskSomeone() {
 		return taskSomeone;
 	}
-
-	public void setTaskSomeone(TaskSomeoneDetailsDTO taskSomeone) {
+	public void setTaskSomeone(TaskSomeoneForListDTO taskSomeone) {
 		this.taskSomeone = taskSomeone;
 	}
 
 	public Date getCreatedOn() {
 		return createdOn;
 	}
-
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
 	}
@@ -65,8 +47,14 @@ public class TaskApplicationForListDTO {
 	public ApplicationStatus getStatus() {
 		return status;
 	}
-
 	public void setStatus(ApplicationStatus status) {
 		this.status = status;
+	}
+
+	public MessageDTO getApplyingMessage() {
+		return applyingMessage;
+	}
+	public void setApplyingMessage(MessageDTO applyingMessage) {
+		this.applyingMessage = applyingMessage;
 	}
 }

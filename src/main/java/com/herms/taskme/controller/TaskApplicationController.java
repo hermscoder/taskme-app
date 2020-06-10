@@ -2,10 +2,13 @@ package com.herms.taskme.controller;
 import com.herms.taskme.dto.UserDTO;
 import com.herms.taskme.model.*;
 import com.herms.taskme.converter.TaskApplicationConverter;
+import com.herms.taskme.dto.MessageDTO;
 import com.herms.taskme.dto.TaskApplicationDetailsDTO;
 import com.herms.taskme.dto.TaskApplicationForListDTO;
 import com.herms.taskme.service.CustomUserDetailsService;
+import com.herms.taskme.service.MessageService;
 import com.herms.taskme.service.TaskApplicationService;
+import com.herms.taskme.service.TaskSomeoneService;
 import com.herms.taskme.service.TaskApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +33,9 @@ public class TaskApplicationController {
     private TaskApplicationConverter taskApplicationConverter;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
+    @Autowired
+    private TaskSomeoneService taskSomeoneService;
+    
     @RequestMapping(method = RequestMethod.GET, value = "/taskapplication/{taskSomeoneId}")
     public ResponseEntity<Page<TaskApplication>> getTaskApplicationPages(
     		@PathVariable Long taskSomeoneId,
@@ -52,8 +57,9 @@ public class TaskApplicationController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/taskapplication")
-    public ResponseEntity<TaskApplicationForListDTO> addTaskApplication(@RequestBody TaskApplication taskSomeone){
-        return new ResponseEntity<>(new TaskApplicationForListDTO(taskApplicationService.addTaskApplication(taskSomeone)), HttpStatus.OK);
+    public ResponseEntity<TaskApplicationForListDTO> addTaskApplication(@RequestBody TaskApplication taskSomeone) throws Exception{
+    	TaskApplicationForListDTO dto = taskApplicationConverter.toDTO(taskApplicationService.addTaskApplication(taskSomeone), TaskApplicationForListDTO.class);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/taskapplication/{id}")
@@ -76,7 +82,7 @@ public class TaskApplicationController {
         taskApplicationService.deleteTaskApplication(id);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/taskapplication/applications")
+    @RequestMapping(method = RequestMethod.GET, value = "/taskapplication")
     public ResponseEntity<Page<TaskApplicationForListDTO>> getCurrentUserTaskApplications(
             @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
             @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
@@ -86,10 +92,31 @@ public class TaskApplicationController {
         User principal = customUserDetailsService.getLoggedUser();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<TaskApplication> taskSomeoneCreatedBy = taskApplicationService.getAllTaskApplicationCreatedByUserIdPaginated(pageRequest, principal.getId(), searchTerm);
+        Page<TaskApplication> taskApplicationsCreatedBy = taskApplicationService.getAllTaskApplicationCreatedByUserIdPaginated(pageRequest, principal.getId(), searchTerm);
+        Page<TaskApplicationForListDTO> taskApplicationForListDTOs = taskApplicationsCreatedBy.map((taskApplication) -> {
+			try {
+				return taskApplicationConverter.toDTO(taskApplication, TaskApplicationForListDTO.class);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		});
+        return new ResponseEntity<>(taskApplicationForListDTOs, HttpStatus.OK);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/taskapplication/sendApplyingMsg/{taskSomeoneId}")
+    public ResponseEntity<TaskApplicationDetailsDTO> sendMsgToOwnerOfTaskAndApply(@PathVariable Long taskSomeoneId, @RequestBody MessageDTO message) throws Exception {
 
-        Page<TaskApplicationForListDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map(TaskApplicationForListDTO::new);
-        return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
+    	TaskSomeone taskSomeone = taskSomeoneService.getTaskSomeone(taskSomeoneId);
+    	
+        User principal = customUserDetailsService.getLoggedUser();
+        if(principal == null ||  principal.getId().equals(taskSomeone.getUser())){
+            throw new Exception("You don't have access to this function");
+        }
+        message.setUserSenderId(principal.getId());
+        
+        TaskApplicationDetailsDTO dto = taskApplicationConverter.toDTO(taskApplicationService.sendMsgAndApply(taskSomeone, message), TaskApplicationDetailsDTO.class);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
 }

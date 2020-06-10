@@ -51,7 +51,7 @@ public class MessageService {
     	List<Conversation> conversationList = conversationService.findConversationByParticipants(Arrays.asList(targetUserId, msgDTO.getUserSenderId()));
     	Message msg = messageConverter.fromMessagetDTO(msgDTO);
     	msg.setSentTime(new Date());
-    	
+    	msg = addMessage(msg);
     	Conversation conversation;
     	if(conversationList != null && !conversationList.isEmpty()) {
     		conversation = conversationList.get(0);
@@ -65,7 +65,6 @@ public class MessageService {
         	msg.setConversation(conversation);
     		conversationService.addConversation(conversation);
     	}
-    	
     	return msg;
     }
     

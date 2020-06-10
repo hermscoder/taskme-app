@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.herms.taskme.model.Message;
 	
-public class MessageDTO {
+public class MessageDTO extends DataTransferObject {
 
     private Long id;
     private String content;

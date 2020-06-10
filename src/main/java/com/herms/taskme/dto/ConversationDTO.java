@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConversationDTO implements Serializable{
-
-    private static final long serialVersionUID = 1L;
+public class ConversationDTO extends DataTransferObject {
 
     private Long id;
     private Boolean hasUnreadMessages;
@@ -22,9 +20,6 @@ public class ConversationDTO implements Serializable{
     	messagesList = new ArrayList<>();
     	userMap = new HashMap<>();
     	participants = new ArrayList<>();
-    }
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     public Long getId() {

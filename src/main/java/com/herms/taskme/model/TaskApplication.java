@@ -36,6 +36,10 @@ public class TaskApplication implements Serializable{
     @Basic
     @Convert(converter = ApplicationStatusConverter.class)
     private ApplicationStatus status;
+    @OneToOne
+    @JoinColumn(name = "APPLYING_MESSAGE", referencedColumnName = "ID")
+    private Message applyingMessage;
+    
     
     public TaskApplication(){
     }
@@ -68,7 +72,14 @@ public class TaskApplication implements Serializable{
         this.createdOn = createdOn;
     }
 
-    public ApplicationStatus getApplicationStatus() {
+	public Message getApplyingMessage() {
+		return applyingMessage;
+	}
+	public void setApplyingMessage(Message applyingMessage) {
+		this.applyingMessage = applyingMessage;
+	}
+
+	public ApplicationStatus getStatus() {
 		return status;
 	}
 	public void setStatus(ApplicationStatus status) {

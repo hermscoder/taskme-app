@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.herms.taskme.dto.TaskApplicationDetailsDTO;
+import com.herms.taskme.dto.TaskApplicationForListDTO;
+import com.herms.taskme.dto.TaskSomeoneDetailsDTO;
+import com.herms.taskme.dto.TaskSomeoneForListDTO;
 import com.herms.taskme.dto.UserDTO;
 import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.User;
@@ -21,9 +24,13 @@ import com.herms.taskme.service.CustomUserDetailsService;
 @Service
 public class TaskApplicationConverter {
 	@Autowired
-	private UserRepository userRepository;
+	private TaskSomeoneConverter taskSomeoneConverter;
 	@Autowired
     private CustomUserDetailsService customUserDetailsService;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private MessageConverter messageConverter;
 	
 	private ModelMapper modelMapper;
 
@@ -31,6 +38,9 @@ public class TaskApplicationConverter {
 		this.modelMapper = new ModelMapper();
 		this.modelMapper.addConverter(toTaskApplicationDetailsDTOConv);
 		this.modelMapper.addConverter(fromTaskApplicationDetailsDTOConv);
+
+		this.modelMapper.addConverter(toTaskApplicationForListDTOConv);
+		this.modelMapper.addConverter(fromTaskApplicationForListDTOConv);
 	}
 
 	public <T> List<TaskApplication> fromDTO(List<T> conversationDTOsList) {
@@ -66,8 +76,8 @@ public class TaskApplicationConverter {
 			dto = clazz.getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
-			throw new Exception("Unable to convert object of class " + taskSomeone.getClass().getName() + " to class"
-					+ clazz.getName());
+			e.printStackTrace();
+			throw new Exception("Unable to convert object of class " + taskSomeone.getClass().getName() + " to class " + clazz.getName());
 		}
 		modelMapper.map(taskSomeone, dto);
 		return dto;
@@ -76,9 +86,16 @@ public class TaskApplicationConverter {
 	Converter<TaskApplication, TaskApplicationDetailsDTO> toTaskApplicationDetailsDTOConv = new Converter<TaskApplication, TaskApplicationDetailsDTO>() {
 
 		@Override
-		public TaskApplicationDetailsDTO convert(MappingContext<TaskApplication, TaskApplicationDetailsDTO> context) {
-
-
+		public TaskApplicationDetailsDTO convert(MappingContext<TaskApplication, TaskApplicationDetailsDTO> context){
+			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
+			try {
+				context.getDestination().setTaskSomeone(taskSomeoneConverter.toDTO(context.getSource().getTaskSomeone(), TaskSomeoneDetailsDTO.class));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
+			context.getDestination().setApplyingMessage(messageConverter.toMessagetDTO(context.getSource().getApplyingMessage()));
 			return context.getDestination();
 		}
 	};
@@ -87,7 +104,42 @@ public class TaskApplicationConverter {
 
 		@Override
 		public TaskApplication convert(MappingContext<TaskApplicationDetailsDTO, TaskApplication> context) {
-			
+			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setUser(userRepository.getOne(context.getSource().getUser().getId()));
+			context.getDestination().setTaskSomeone(taskSomeoneConverter.fromDTO(context.getSource().getTaskSomeone()));
+			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
+			context.getDestination().setApplyingMessage(messageConverter.fromMessagetDTO(context.getSource().getApplyingMessage()));
+
+			return context.getDestination();
+		}
+	};
+	
+	Converter<TaskApplication, TaskApplicationForListDTO> toTaskApplicationForListDTOConv = new Converter<TaskApplication, TaskApplicationForListDTO>() {
+
+		@Override
+		public TaskApplicationForListDTO convert(MappingContext<TaskApplication, TaskApplicationForListDTO> context) {
+			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
+			try {
+				context.getDestination().setTaskSomeone(taskSomeoneConverter.toDTO(context.getSource().getTaskSomeone(), TaskSomeoneForListDTO.class));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
+			context.getDestination().setApplyingMessage(messageConverter.toMessagetDTO(context.getSource().getApplyingMessage()));
+			return context.getDestination();
+		}
+	};
+	
+	Converter<TaskApplicationForListDTO, TaskApplication> fromTaskApplicationForListDTOConv = new Converter<TaskApplicationForListDTO, TaskApplication>() {
+
+		@Override
+		public TaskApplication convert(MappingContext<TaskApplicationForListDTO, TaskApplication> context) {
+			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setUser(userRepository.getOne(context.getSource().getUser().getId()));
+			context.getDestination().setTaskSomeone(taskSomeoneConverter.fromDTO(context.getSource().getTaskSomeone()));
+			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
+			context.getDestination().setApplyingMessage(messageConverter.fromMessagetDTO(context.getSource().getApplyingMessage()));
 
 			return context.getDestination();
 		}

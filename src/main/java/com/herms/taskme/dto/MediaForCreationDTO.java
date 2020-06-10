@@ -5,7 +5,7 @@ import com.herms.taskme.model.TaskSomeone;
 import java.io.File;
 import java.util.Date;
 
-public class MediaForCreationDTO {
+public class MediaForCreationDTO extends DataTransferObject {
     private String url;
     private byte[] fileByteArray;
     private String description;

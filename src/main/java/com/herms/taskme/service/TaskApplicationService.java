@@ -8,7 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.herms.taskme.dto.MessageDTO;
 import com.herms.taskme.enums.ApplicationStatus;
+import com.herms.taskme.model.Message;
 import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.TaskSomeone;
 import com.herms.taskme.repository.TaskApplicationRepository;
@@ -20,7 +22,7 @@ public class TaskApplicationService {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
-    private MediaService mediaService;
+    private MessageService messageService;
 
     public TaskApplicationService() {
     }
@@ -41,7 +43,9 @@ public class TaskApplicationService {
     public TaskApplication addTaskApplication(TaskApplication taskApplication){
     	taskApplication.setCreatedOn(new Date());
     	taskApplication.setUser(customUserDetailsService.getLoggedUser());
-    	taskApplication.setStatus(ApplicationStatus.PENDING);
+    	if(taskApplication.getStatus() == null) {
+    		taskApplication.setStatus(ApplicationStatus.PENDING);    		
+    	}
         return taskApplicationRepository.save(taskApplication);
     }
     
@@ -63,4 +67,17 @@ public class TaskApplicationService {
     public void deleteTaskApplication(Long id){
     	taskApplicationRepository.deleteById(id);
     }
+
+	public TaskApplication sendMsgAndApply(TaskSomeone taskSomeone, MessageDTO messageDTO) {
+		Message message = messageService.sendMessageTo(taskSomeone.getUser().getId(), messageDTO);
+		messageDTO = new MessageDTO(message);
+
+		TaskApplication taskApplication = new TaskApplication();
+		taskApplication.setCreatedOn(new Date());
+		taskApplication.setUser(customUserDetailsService.getLoggedUser());
+		taskApplication.setTaskSomeone(taskSomeone);
+		taskApplication.setApplyingMessage(message);
+
+		return addTaskApplication(taskApplication);
+	}
 }

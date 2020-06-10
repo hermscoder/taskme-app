@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class TaskSomeoneDetailsDTO {
+public class TaskSomeoneDetailsDTO extends DataTransferObject {
 	
     private Long id;
 
