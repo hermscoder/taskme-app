@@ -1,6 +1,8 @@
 package com.herms.taskme.controller;
 import com.herms.taskme.dto.UserDTO;
 import com.herms.taskme.model.*;
+import com.herms.taskme.converter.TaskSomeoneConverter;
+import com.herms.taskme.dto.TaskSomeoneDetailsDTO;
 import com.herms.taskme.dto.TaskSomeoneForListDTO;
 import com.herms.taskme.service.CustomUserDetailsService;
 import com.herms.taskme.service.TaskSomeoneService;
@@ -25,6 +27,8 @@ public class TaskSomeoneController {
     private TaskSomeoneService taskSomeoneService;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    private TaskSomeoneConverter taskSomeoneConverter;
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone")
     public List<TaskSomeone> getAllTaskSomeone(){
@@ -51,8 +55,8 @@ public class TaskSomeoneController {
     }
 
     @RequestMapping("/tasksomeone/{id}")
-    public TaskSomeone getTaskSomeone(@PathVariable Long id){
-        return taskSomeoneService.getTaskSomeone(id);
+    public ResponseEntity<TaskSomeoneDetailsDTO> getTaskSomeone(@PathVariable Long id) throws Exception{
+    	return new ResponseEntity<>(taskSomeoneConverter.toDTO(taskSomeoneService.getTaskSomeone(id), TaskSomeoneDetailsDTO.class), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone")
@@ -61,9 +65,18 @@ public class TaskSomeoneController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/tasksomeone/{id}")
-    public ResponseEntity<TaskSomeone> updateTaskSomeone(@RequestBody TaskSomeone taskSomeone, @PathVariable Long id){
-        return new ResponseEntity<>(taskSomeoneService.updateTaskSomeone(id, taskSomeone), HttpStatus.OK
-        );
+    public ResponseEntity<TaskSomeoneDetailsDTO> updateTaskSomeone(@RequestBody TaskSomeone taskSomeone, @PathVariable Long id) throws Exception{
+    	User principal = customUserDetailsService.getLoggedUser();
+        TaskSomeone originalTaskSomeone = taskSomeoneService.getTaskSomeone(id);
+        
+        if(originalTaskSomeone == null || !originalTaskSomeone.getUser().equals(principal)){
+            throw new Exception("You don't have access to this function");
+        }
+        
+    	TaskSomeoneDetailsDTO dto = taskSomeoneConverter.toDTO(
+    										taskSomeoneService.updateTaskSomeone(id, taskSomeone, originalTaskSomeone)
+    										, TaskSomeoneDetailsDTO.class);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/tasksomeone/{id}")
@@ -139,5 +152,20 @@ public class TaskSomeoneController {
         return new ResponseEntity<>(new TaskSomeoneForListDTO(taskSomeone), HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/applications")
+    public ResponseEntity<Page<TaskSomeoneForListDTO>> getCurrentUserTaskApplications(
+            @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
+            @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
+            @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
+            @RequestParam(value="direction", defaultValue = "DESC") String direction,
+            @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) throws Exception {
+        User principal = customUserDetailsService.getLoggedUser();
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTaskSomeoneCreatedByUserIdPaginated(pageRequest, principal.getId(), searchTerm);
+
+        Page<TaskSomeoneForListDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map(TaskSomeoneForListDTO::new);
+        return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
+    }
 
 }

@@ -10,20 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class TaskSomeoneDetailsDTO {
-
-    public TaskSomeoneDetailsDTO() {
-    }
-
-    public TaskSomeoneDetailsDTO(TaskSomeone taskSomeone) {
-        id = taskSomeone.getId();
-        title = taskSomeone.getTitle();
-        description = taskSomeone.getDescription();
-        location = taskSomeone.getLocation();
-        user = new UserDTO(taskSomeone.getUser());
-        mediaList = taskSomeone.getMediaList();
-        createdOn = taskSomeone.getCreatedOn();
-    }
-
+	
     private Long id;
 
     private String title;
@@ -37,7 +24,22 @@ public class TaskSomeoneDetailsDTO {
     private List<Media> mediaList;
 
     private Date createdOn;
+    
+    private Boolean ownTask;
 
+    public TaskSomeoneDetailsDTO() {
+    }
+
+    public TaskSomeoneDetailsDTO(TaskSomeone taskSomeone) {
+        id = taskSomeone.getId();
+        title = taskSomeone.getTitle();
+        description = taskSomeone.getDescription();
+        location = taskSomeone.getLocation();
+        user = new UserDTO(taskSomeone.getUser());
+        mediaList = taskSomeone.getMediaList();
+        createdOn = taskSomeone.getCreatedOn();
+    }
+    
     public Long getId() {
         return id;
     }
@@ -93,4 +95,12 @@ public class TaskSomeoneDetailsDTO {
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
+
+	public Boolean getOwnTask() {
+		return ownTask;
+	}
+
+	public void setOwnTask(Boolean ownTask) {
+		this.ownTask = ownTask;
+	}
 }

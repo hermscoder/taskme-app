@@ -52,6 +52,10 @@ public class TaskSomeoneService {
     public Page<TaskSomeone> getAllTaskSomeoneCreatedByUserIdPaginated(Pageable pageable, Long userId, String term){
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
     }
+    
+    public Page<TaskSomeone> getAllUserTaskApplicationsPaginated(Pageable pageable, Long userId, String term){
+        return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
+    }
 
     public TaskSomeone addTaskSomeone(TaskSomeone taskSomeone){
         taskSomeone.setCreatedOn(new Date());
@@ -60,7 +64,14 @@ public class TaskSomeoneService {
     }
 
     public TaskSomeone updateTaskSomeone(Long id, TaskSomeone taskSomeone) {
-        TaskSomeone original = getTaskSomeone(taskSomeone.getId());
+    	return updateTaskSomeone(id, taskSomeone, null);
+    }
+
+    public TaskSomeone updateTaskSomeone(Long id, TaskSomeone taskSomeone, TaskSomeone originalTaskSomeone) {
+    	TaskSomeone original = originalTaskSomeone;
+    	if(original == null) {
+    		original = getTaskSomeone(taskSomeone.getId());
+    	}
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(taskSomeone, original);
