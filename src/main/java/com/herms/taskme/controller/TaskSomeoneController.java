@@ -105,7 +105,7 @@ public class TaskSomeoneController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/createdTasks")
-    public ResponseEntity<Page<TaskSomeoneForListDTO>> getCurrentUserCreatedTasks(
+    public ResponseEntity<Page<TaskSomeoneDetailsDTO>> getCurrentUserCreatedTasks(
             @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
             @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
             @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
@@ -115,8 +115,7 @@ public class TaskSomeoneController {
 
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTaskSomeoneCreatedByUserIdPaginated(pageRequest, principal.getId(), searchTerm);
-
-        Page<TaskSomeoneForListDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map(TaskSomeoneForListDTO::new);
+        Page<TaskSomeoneDetailsDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map((taskSomeone) -> taskSomeoneConverter.toDTO(taskSomeone, TaskSomeoneDetailsDTO.class));
         return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
     }
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/createdTasks/{userid}")

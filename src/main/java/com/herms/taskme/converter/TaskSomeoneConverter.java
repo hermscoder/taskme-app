@@ -12,13 +12,16 @@ import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.herms.taskme.dto.TaskApplicationForListDTO;
 import com.herms.taskme.dto.TaskSomeoneDetailsDTO;
 import com.herms.taskme.dto.UserDTO;
 import com.herms.taskme.model.Message;
+import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.TaskSomeone;
 import com.herms.taskme.model.User;
 import com.herms.taskme.repository.UserRepository;
 import com.herms.taskme.service.CustomUserDetailsService;
+import com.herms.taskme.service.TaskApplicationService;
 
 @Service
 public class TaskSomeoneConverter {
@@ -26,8 +29,12 @@ public class TaskSomeoneConverter {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-    private CustomUserDetailsService customUserDetailsService;
-	
+	private CustomUserDetailsService customUserDetailsService;
+	@Autowired
+	private TaskApplicationService taskApplicationService;
+	@Autowired
+	private TaskApplicationConverter taskApplicationConverter;
+
 	private ModelMapper modelMapper;
 
 	public TaskSomeoneConverter() {
@@ -63,13 +70,14 @@ public class TaskSomeoneConverter {
 	 * @return The Object of class T (must be a DTO class)
 	 * @throws Exception
 	 */
-	public <T> T toDTO(TaskSomeone taskSomeone, Class<T> clazz) throws Exception {
-		T dto;
+	public <T> T toDTO(TaskSomeone taskSomeone, Class<T> clazz) {
+		T dto = null;
 		try {
 			dto = clazz.getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
-			throw new Exception("Unable to convert object of class " + taskSomeone.getClass().getName() + " to class"
+			e.printStackTrace();
+			System.out.println("[ERROR] Unable to convert object of class " + taskSomeone.getClass().getName() + " to class"
 					+ clazz.getName());
 		}
 		modelMapper.map(taskSomeone, dto);
@@ -90,6 +98,14 @@ public class TaskSomeoneConverter {
 			context.getDestination().setMediaList(context.getSource().getMediaList());
 			User principal = customUserDetailsService.getLoggedUser();
 			context.getDestination().setOwnTask(principal.getId().equals(context.getSource().getUser().getId()));
+
+			
+			List<TaskApplication> applicantions = taskApplicationService.getAllTaskApplicationByTaskId(context.getDestination().getId());
+			List<TaskApplicationForListDTO> applicantionsDTO = taskApplicationConverter.toDTO(applicantions, TaskApplicationForListDTO.class);
+			context.getDestination().setTaskApplicants(applicantionsDTO);
+			boolean alreadyApplied = applicantionsDTO.stream().anyMatch((application) -> application.getUser().getId().equals(principal.getId()));
+			context.getDestination().setAlreadyApplied(alreadyApplied);
+
 			return context.getDestination();
 		}
 	};
@@ -98,7 +114,7 @@ public class TaskSomeoneConverter {
 
 		@Override
 		public TaskSomeone convert(MappingContext<TaskSomeoneDetailsDTO, TaskSomeone> context) {
-			
+
 			context.getDestination().setId(context.getSource().getId());
 			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
 			context.getDestination().setDescription(context.getSource().getDescription());

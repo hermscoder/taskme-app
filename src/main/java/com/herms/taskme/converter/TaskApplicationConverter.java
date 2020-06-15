@@ -53,7 +53,7 @@ public class TaskApplicationConverter {
 		return taskSomeone;
 	}
 
-	public <T> List<T> toDTO(List<TaskApplication> taskSomeoneList, Class<T> clazz) throws Exception {
+	public <T> List<T> toDTO(List<TaskApplication> taskSomeoneList, Class<T> clazz){
 		List<T> returnDTOsList = new ArrayList<>();
 
 		for (TaskApplication task : taskSomeoneList) {
@@ -70,14 +70,14 @@ public class TaskApplicationConverter {
 	 * @return The Object of class T (must be a DTO class)
 	 * @throws Exception
 	 */
-	public <T> T toDTO(TaskApplication taskSomeone, Class<T> clazz) throws Exception {
-		T dto;
+	public <T> T toDTO(TaskApplication taskSomeone, Class<T> clazz) {
+		T dto = null;
 		try {
 			dto = clazz.getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
-			throw new Exception("Unable to convert object of class " + taskSomeone.getClass().getName() + " to class " + clazz.getName());
+			System.out.println("Unable to convert object of class " + taskSomeone.getClass().getName() + " to class " + clazz.getName());
 		}
 		modelMapper.map(taskSomeone, dto);
 		return dto;
@@ -88,6 +88,7 @@ public class TaskApplicationConverter {
 		@Override
 		public TaskApplicationDetailsDTO convert(MappingContext<TaskApplication, TaskApplicationDetailsDTO> context){
 			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setStatus(context.getSource().getStatus());
 			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
 			try {
 				context.getDestination().setTaskSomeone(taskSomeoneConverter.toDTO(context.getSource().getTaskSomeone(), TaskSomeoneDetailsDTO.class));
@@ -105,6 +106,7 @@ public class TaskApplicationConverter {
 		@Override
 		public TaskApplication convert(MappingContext<TaskApplicationDetailsDTO, TaskApplication> context) {
 			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setStatus(context.getSource().getStatus());
 			context.getDestination().setUser(userRepository.getOne(context.getSource().getUser().getId()));
 			context.getDestination().setTaskSomeone(taskSomeoneConverter.fromDTO(context.getSource().getTaskSomeone()));
 			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
@@ -118,15 +120,12 @@ public class TaskApplicationConverter {
 
 		@Override
 		public TaskApplicationForListDTO convert(MappingContext<TaskApplication, TaskApplicationForListDTO> context) {
-			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setTaskApplicationId(context.getSource().getId());
+			context.getDestination().setTaskApplicationStatus(context.getSource().getStatus());
 			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
-			try {
-				context.getDestination().setTaskSomeone(taskSomeoneConverter.toDTO(context.getSource().getTaskSomeone(), TaskSomeoneForListDTO.class));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
 			context.getDestination().setApplyingMessage(messageConverter.toMessagetDTO(context.getSource().getApplyingMessage()));
+
 			return context.getDestination();
 		}
 	};
@@ -135,12 +134,12 @@ public class TaskApplicationConverter {
 
 		@Override
 		public TaskApplication convert(MappingContext<TaskApplicationForListDTO, TaskApplication> context) {
-			context.getDestination().setId(context.getSource().getId());
+			context.getDestination().setId(context.getSource().getTaskApplicationId());
+			context.getDestination().setStatus(context.getSource().getTaskApplicationStatus());
 			context.getDestination().setUser(userRepository.getOne(context.getSource().getUser().getId()));
-			context.getDestination().setTaskSomeone(taskSomeoneConverter.fromDTO(context.getSource().getTaskSomeone()));
 			context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
 			context.getDestination().setApplyingMessage(messageConverter.fromMessagetDTO(context.getSource().getApplyingMessage()));
-
+			
 			return context.getDestination();
 		}
 	};

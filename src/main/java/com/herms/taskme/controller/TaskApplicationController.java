@@ -1,8 +1,10 @@
 package com.herms.taskme.controller;
 import com.herms.taskme.dto.UserDTO;
+import com.herms.taskme.enums.ApplicationStatus;
 import com.herms.taskme.model.*;
 import com.herms.taskme.converter.TaskApplicationConverter;
 import com.herms.taskme.dto.MessageDTO;
+import com.herms.taskme.dto.MsgAndNewApplicationStatus;
 import com.herms.taskme.dto.TaskApplicationDetailsDTO;
 import com.herms.taskme.dto.TaskApplicationForListDTO;
 import com.herms.taskme.service.CustomUserDetailsService;
@@ -37,18 +39,19 @@ public class TaskApplicationController {
     private TaskSomeoneService taskSomeoneService;
     
     @RequestMapping(method = RequestMethod.GET, value = "/taskapplication/{taskSomeoneId}")
-    public ResponseEntity<Page<TaskApplication>> getTaskApplicationPages(
+    public ResponseEntity<Page<TaskApplicationDetailsDTO>> getTaskApplicationPages(
     		@PathVariable Long taskSomeoneId,
             @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
             @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
             @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
             @RequestParam(value="direction", defaultValue = "DESC") String direction,
-            @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) {
+            @RequestParam(value="searchTerm", defaultValue = "") String searchTerm,
+            @RequestParam(value="status", defaultValue = "", required = false) String status) {
 
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<TaskApplication> pontoRotaList = taskApplicationService.getAllTaskApplicationByTaskIdPaginated(pageRequest, taskSomeoneId, searchTerm);
-
-        return ResponseEntity.ok(pontoRotaList);
+        Page<TaskApplication> applicationsList = taskApplicationService.getAllTaskApplicationByTaskIdAndStatusPaginated(pageRequest, taskSomeoneId, searchTerm, ApplicationStatus.fromCode(status));
+        applicationsList.map(application -> taskApplicationConverter.toDTO(application, TaskApplicationDetailsDTO.class));
+        return ResponseEntity.ok(applicationsList.map(application -> taskApplicationConverter.toDTO(application, TaskApplicationDetailsDTO.class)));
     }
 
     @RequestMapping("/taskapplication/{id}")
@@ -81,27 +84,40 @@ public class TaskApplicationController {
     public void deleteTaskApplication(@PathVariable Long id){
         taskApplicationService.deleteTaskApplication(id);
     }
-
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/taskapplication/cancel")
+    public ResponseEntity<TaskApplicationDetailsDTO> cancelApplication(@RequestBody TaskApplicationDetailsDTO taskApplicationDTO) throws Exception{
+    	TaskApplication application = taskApplicationConverter.fromDTO(taskApplicationDTO);
+    	User principal = customUserDetailsService.getLoggedUser();
+    	
+    	if(principal == null || !principal.equals(application.getUser())) {
+    		throw new Exception("You can not cancel applications from another users!");
+    	}
+    	TaskApplicationDetailsDTO dto = taskApplicationConverter.toDTO(taskApplicationService.cancelApplication(application), TaskApplicationDetailsDTO.class);
+        return new ResponseEntity<TaskApplicationDetailsDTO>(dto, HttpStatus.OK);
+    }
+    
     @RequestMapping(method = RequestMethod.GET, value = "/taskapplication")
-    public ResponseEntity<Page<TaskApplicationForListDTO>> getCurrentUserTaskApplications(
+    public ResponseEntity<Page<TaskApplicationDetailsDTO>> getCurrentUserTaskApplications(
             @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
             @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
             @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
             @RequestParam(value="direction", defaultValue = "DESC") String direction,
-            @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) throws Exception {
+            @RequestParam(value="searchTerm", defaultValue = "") String searchTerm,
+            @RequestParam(value="status", defaultValue = "", required = false) String status) throws Exception {
         User principal = customUserDetailsService.getLoggedUser();
 
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<TaskApplication> taskApplicationsCreatedBy = taskApplicationService.getAllTaskApplicationCreatedByUserIdPaginated(pageRequest, principal.getId(), searchTerm);
-        Page<TaskApplicationForListDTO> taskApplicationForListDTOs = taskApplicationsCreatedBy.map((taskApplication) -> {
+        Page<TaskApplication> taskApplicationsCreatedBy = taskApplicationService.getAllTaskApplicationCreatedByUserIdAndStatusPaginated(pageRequest, principal.getId(), searchTerm, ApplicationStatus.fromCode(status));
+        Page<TaskApplicationDetailsDTO> taskApplicationDTOs = taskApplicationsCreatedBy.map((taskApplication) -> {
 			try {
-				return taskApplicationConverter.toDTO(taskApplication, TaskApplicationForListDTO.class);
+				return taskApplicationConverter.toDTO(taskApplication, TaskApplicationDetailsDTO.class);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return null;
 		});
-        return new ResponseEntity<>(taskApplicationForListDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(taskApplicationDTOs, HttpStatus.OK);
     }
     
     @RequestMapping(method = RequestMethod.POST, value = "/taskapplication/sendApplyingMsg/{taskSomeoneId}")
@@ -119,4 +135,17 @@ public class TaskApplicationController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/taskapplication/changeStatusAndSendMsgToApplicant")
+    public ResponseEntity<TaskApplicationDetailsDTO> changeApplicationStatus(@RequestBody MsgAndNewApplicationStatus msgAndNewStatus) throws Exception{
+    	TaskApplication application = taskApplicationService.getTaskApplication(msgAndNewStatus.getTaskApplicationId());
+    	User principal = customUserDetailsService.getLoggedUser();
+    	
+    	if(principal == null || !principal.equals(application.getTaskSomeone().getUser())) {
+    		throw new Exception("You can not change applications related to other users tasks!");
+    	}
+
+    	msgAndNewStatus.getUpdateStatusMsg().setUserSenderId(principal.getId());
+    	TaskApplicationDetailsDTO dto = taskApplicationConverter.toDTO(taskApplicationService.changeApplicationStatusAndSendMsgToApplicant(application, msgAndNewStatus.getNewStatusCode(), msgAndNewStatus.getUpdateStatusMsg()), TaskApplicationDetailsDTO.class);
+        return new ResponseEntity<TaskApplicationDetailsDTO>(dto, HttpStatus.OK);
+    }
 }

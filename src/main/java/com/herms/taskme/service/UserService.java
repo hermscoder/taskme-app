@@ -65,5 +65,9 @@ public class UserService {
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
     }
+    
+    public List<User> findAllTaskApplicantsByTaskSomeone_IdOrderByCreatedOnDesc(Long taskSomeoneId){
+    	return userRepository.findAllTaskApplicantsByTaskSomeone_IdOrderByCreatedOnDesc(taskSomeoneId);
+    }
 }
 

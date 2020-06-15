@@ -5,9 +5,9 @@ import javax.persistence.AttributeConverter;
 import com.herms.taskme.enums.ApplicationStatus;
 
 
-public class ApplicationStatusConverter implements AttributeConverter<ApplicationStatus, Character> {
+public class ApplicationStatusConverter implements AttributeConverter<ApplicationStatus, String> {
 
-	public Character convertToDatabaseColumn(ApplicationStatus value) {
+	public String convertToDatabaseColumn(ApplicationStatus value) {
 	    if ( value == null ) {
 	        return null;
 	    }
@@ -15,7 +15,7 @@ public class ApplicationStatusConverter implements AttributeConverter<Applicatio
 	    return value.getCode();
 	}
 
-	public ApplicationStatus convertToEntityAttribute(Character value) {
+	public ApplicationStatus convertToEntityAttribute(String value) {
 	    if ( value == null ) {
 	        return null;
 	    }

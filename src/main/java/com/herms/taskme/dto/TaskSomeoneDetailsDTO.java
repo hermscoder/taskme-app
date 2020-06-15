@@ -12,21 +12,17 @@ import java.util.List;
 public class TaskSomeoneDetailsDTO extends DataTransferObject {
 	
     private Long id;
-
     private String title;
-
     private String description;
-
     private String location;
-
     private UserDTO user;
-
     private List<Media> mediaList;
-
     private Date createdOn;
-    
     private Boolean ownTask;
-
+    private List<TaskApplicationForListDTO> taskApplicants;
+    private Boolean alreadyApplied;
+    
+    
     public TaskSomeoneDetailsDTO() {
     }
 
@@ -43,7 +39,6 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -51,7 +46,6 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -59,7 +53,6 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -67,7 +60,6 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     public String getLocation() {
         return location;
     }
-
     public void setLocation(String location) {
         this.location = location;
     }
@@ -75,7 +67,6 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     public UserDTO getUser() {
         return user;
     }
-
     public void setUser(UserDTO user) {
         this.user = user;
     }
@@ -83,7 +74,6 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     public List<Media> getMediaList() {
         return mediaList;
     }
-
     public void setMediaList(List<Media> mediaList) {
         this.mediaList = mediaList;
     }
@@ -91,7 +81,6 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     public Date getCreatedOn() {
         return createdOn;
     }
-
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
@@ -99,8 +88,21 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
 	public Boolean getOwnTask() {
 		return ownTask;
 	}
-
 	public void setOwnTask(Boolean ownTask) {
 		this.ownTask = ownTask;
+	}
+
+	public List<TaskApplicationForListDTO> getTaskApplicants() {
+		return taskApplicants;
+	}
+	public void setTaskApplicants(List<TaskApplicationForListDTO> taskApplicants) {
+		this.taskApplicants = taskApplicants;
+	}
+
+	public Boolean getAlreadyApplied() {
+		return alreadyApplied;
+	}
+	public void setAlreadyApplied(Boolean alreadyApplied) {
+		this.alreadyApplied = alreadyApplied;
 	}
 }

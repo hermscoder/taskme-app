@@ -1,6 +1,7 @@
 package com.herms.taskme.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +32,20 @@ public class TaskApplicationService {
         return taskApplicationRepository.findById(id).get();
     }
 
-    
-    public Page<TaskApplication> getAllTaskApplicationByTaskIdPaginated(Pageable pageable, Long taskSomeoneId, String term){
-        return taskApplicationRepository.findAllByTaskSomeoneAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, taskSomeoneId, term);
+    public List<TaskApplication> getAllTaskApplicationByTaskId(Long taskSomeoneId){
+        return taskApplicationRepository.findAllByTaskSomeone_IdOrderByCreatedOnDesc(taskSomeoneId);
+    }
+
+    public Page<TaskApplication> getAllTaskApplicationByTaskIdAndStatusPaginated(Pageable pageable, Long taskSomeoneId, String term, ApplicationStatus status){
+        return taskApplicationRepository.findAllByTaskSomeoneAndTitleContainingIgnoreCaseAndStatusOrderByCreatedOnDesc(pageable, taskSomeoneId, term, status);
     }
     
-    public Page<TaskApplication> getAllTaskApplicationCreatedByUserIdPaginated(Pageable pageable, Long userId, String term){
-        return taskApplicationRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
+    public List<TaskApplication> getAllTaskApplicationCreatedByUserId(Long userId){
+        return taskApplicationRepository.findAllByUser_IdOrderByCreatedOnDesc(userId);
+    }
+
+    public Page<TaskApplication> getAllTaskApplicationCreatedByUserIdAndStatusPaginated(Pageable pageable, Long userId, String term, ApplicationStatus status){
+        return taskApplicationRepository.findAllByUser_IdAndTitleContainingIgnoreCaseAndStatusOrderByCreatedOnDesc(pageable, userId, term, status);
     }
 
     public TaskApplication addTaskApplication(TaskApplication taskApplication){
@@ -80,4 +88,24 @@ public class TaskApplicationService {
 
 		return addTaskApplication(taskApplication);
 	}
+
+	public TaskApplication sendAndSetAcceptationMsgToApplicant(TaskApplication taskApplication, MessageDTO messageDTO) {
+		Message message = messageService.sendMessageTo(taskApplication.getUser().getId(), messageDTO);
+		
+		taskApplication.setStatus(ApplicationStatus.ACCEPTED);
+		return updateTaskApplication(taskApplication.getId(), taskApplication);
+	}
+	
+	public TaskApplication cancelApplication(TaskApplication application) {
+		application.setStatus(ApplicationStatus.CANCELLED_BY_APPLICANT);
+		return updateTaskApplication(application.getId(), application);
+	}
+	
+	public TaskApplication changeApplicationStatusAndSendMsgToApplicant(TaskApplication application, String newStatus, MessageDTO messageDTO) {
+		Message message = messageService.sendMessageTo(application.getUser().getId(), messageDTO);
+
+		application.setStatus(ApplicationStatus.fromCode(newStatus));
+		return updateTaskApplication(application.getId(), application);
+	}
+	
 }

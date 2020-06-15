@@ -1,29 +1,37 @@
 package com.herms.taskme.enums;
 
 public enum ApplicationStatus {
-    PENDING( 'P' ),
-    ACCEPTED( 'A' ),
-    DECLINED( 'D' );
+    PENDING( "P" ),
+    ACCEPTED( "A" ),
+    DECLINED( "D" ),
+	CANCELLED_BY_APPLICANT("C"),
+	TASK_CLOSED("T");
 
-    private final char code;
+    private final String code;
 
-    private ApplicationStatus(char code) {
-        this.code = code;
+    private ApplicationStatus(String string) {
+        this.code = string;
     }
 
-    public char getCode() {
+    public String getCode() {
         return code;
     }
 
-    public static ApplicationStatus fromCode(char code) {
-        if ( code == 'P' || code == 'p' ) {
+    public static ApplicationStatus fromCode(String code) {
+        if ( "P".equals(code) || "p".equals(code) ) {
             return PENDING;
         }
-        if ( code == 'A' || code == 'a' ) {
+        if ( "A".equals(code) || "a".equals(code) ) {
             return ACCEPTED;
         }
-        if ( code == 'D' || code == 'd' ) {
+        if ( "D".equals(code) || "d".equals(code) ) {
             return DECLINED;
+        }
+        if ( "C".equals(code) || "c".equals(code) ) {
+            return CANCELLED_BY_APPLICANT;
+        }
+        if ( "T".equals(code) || "t".equals(code) ) {
+            return TASK_CLOSED;
         }
 		return null;
     }
