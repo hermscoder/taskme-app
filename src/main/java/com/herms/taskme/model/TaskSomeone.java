@@ -28,7 +28,7 @@ public class TaskSomeone implements Serializable{
     @Size(min = 1, max = 70)
     @Column(name = "TITLE", nullable = false)
     private String title;
-    @Size(min = 1, max = 300)
+    @Size(min = 1, max = 1000)
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
     @Size(min = 1, max = 150)
