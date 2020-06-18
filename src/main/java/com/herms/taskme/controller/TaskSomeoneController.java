@@ -53,6 +53,11 @@ public class TaskSomeoneController {
     public List<TaskSomeoneForListDTO> listTaskSomeone(){
         return taskSomeoneService.getAllTaskSomeone().stream().map(taskSomeone -> new TaskSomeoneForListDTO(taskSomeone)).collect(Collectors.toList());
     }
+    
+    @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/previousTasks/{userId}")
+    public List<TaskSomeoneForListDTO> listPreviousTasks(@PathVariable Long userId){
+        return taskSomeoneService.listPreviousTasks(userId).stream().map(taskSomeone -> new TaskSomeoneForListDTO(taskSomeone)).collect(Collectors.toList());
+    }
 
     @RequestMapping("/tasksomeone/{id}")
     public ResponseEntity<TaskSomeoneDetailsDTO> getTaskSomeone(@PathVariable Long id) throws Exception{

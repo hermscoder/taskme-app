@@ -37,6 +37,8 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     private List<Media> mediaList;
 
     private Date createdOn;
+    
+    private String infoUrl;
 
     public Long getId() {
         return id;

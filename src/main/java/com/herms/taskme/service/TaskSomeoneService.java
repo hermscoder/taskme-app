@@ -41,6 +41,12 @@ public class TaskSomeoneService {
         return taskSomeoneList;
     }
 
+    public List<TaskSomeone> listPreviousTasks(Long userId){
+		List<TaskSomeone> taskSomeoneList = new ArrayList<>();
+        taskSomeoneRepository.findAllPreviousTasksFromUserIdOrderByCreatedOnDesc(userId).forEach(taskSomeoneList::add);
+        return taskSomeoneList;
+    }
+    
     public Page<TaskSomeone> getAllTaskSomeonePaginated(Pageable pageable, String searchTerm){
         return taskSomeoneRepository.findByTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, searchTerm);
     }
