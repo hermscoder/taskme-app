@@ -22,7 +22,7 @@ import java.util.Set;
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(TransactionSystemException.class)
-    private ResponseEntity<Object> handleConstraintViolation(Exception ex) {
+    private ResponseEntity<ApiError> handleConstraintViolation(Exception ex) {
         Throwable cause = ((TransactionSystemException) ex).getRootCause();
         if (cause instanceof ConstraintViolationException) {
             ConstraintViolationException exception = ((ConstraintViolationException) cause);
@@ -37,7 +37,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler(UsernameAlreadyExistException.class)
-    private ResponseEntity<Object> handleUsernameAlreadyExistException(UsernameAlreadyExistException ex) {
+    private ResponseEntity<ApiError> handleUsernameAlreadyExistException(UsernameAlreadyExistException ex) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         apiError.addSubError(ex.getField(), ex.getMessage());
@@ -45,21 +45,21 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    private ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
+    private ResponseEntity<ApiError> handleBadCredentialsException(BadCredentialsException ex) {
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(Exception.class)
-    private ResponseEntity<Object> handleException(Exception ex) {
+    private ResponseEntity<ApiError> handleException(Exception ex) {
     	ex.printStackTrace();
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 
-    private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
+    private ResponseEntity<ApiError> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 

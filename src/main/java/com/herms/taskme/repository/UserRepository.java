@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("select u from User u where u.username = :username")
+    @Query("select u from User u where UPPER(u.username) = UPPER(:username)")
     public User findByUsername(@Param("username") String username);
     
     @Query("select ta.user from TaskApplication ta where ta.taskSomeone.id = :taskSomeoneId order by created_on")
