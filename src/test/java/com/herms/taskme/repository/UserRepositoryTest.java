@@ -78,12 +78,9 @@ public class UserRepositoryTest {
 		thrown.expect(ConstraintViolationException.class);
 		thrown.expectMessage("size must be between 1 and 50");
 		User user = new User(null, null, "Ribeiro Junior", "994457676", "Rua Joana da Silva, 139, Uberlândia", "teste", "123456");
-		try {
-			System.out.println("saving");
-			this.userRepository.save(user);		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+		this.userRepository.save(user);		
+		
 	}
 
 }
