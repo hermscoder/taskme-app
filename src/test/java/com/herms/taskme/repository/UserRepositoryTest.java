@@ -1,17 +1,14 @@
 package com.herms.taskme.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.assertj.core.api.AssertDelegateTarget;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.TransactionSystemException;
 
@@ -19,15 +16,16 @@ import com.herms.taskme.model.User;
 
 import net.bytebuddy.asm.Advice.Thrown;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class UserRepositoryTest {
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 	
 	@Test
 	public void whenCreateShouldPersistData() {
@@ -75,12 +73,13 @@ public class UserRepositoryTest {
 	
 	@Test
 	public void whenCreateWhenUsernameIsNullShouldThrownConstraintViolationException() {
-		thrown.expect(ConstraintViolationException.class);
-		thrown.expectMessage("size must be between 1 and 50");
 		User user = new User(null, null, "Ribeiro Junior", "994457676", "Rua Joana da Silva, 139, Uberlândia", "teste", "123456");
 		
-		this.userRepository.save(user);		
+		Exception exception = assertThrows(
+							ConstraintViolationException.class, 
+							() -> this.userRepository.save(user));
 		
+		assertTrue(exception.getMessage().contains("size must be between 1 and 50"));
 	}
 
 }
