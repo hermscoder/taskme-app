@@ -18,9 +18,6 @@ public class TaskSomeone implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-//    @Id
-//    @GeneratedValue(generator = "SQ_TASK_SOMEONE")
-//    @SequenceGenerator(name = "SQ_TASK_SOMEONE", sequenceName = "SQ_TASK_SOMEONE", allocationSize = 1)
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)
@@ -44,8 +41,17 @@ public class TaskSomeone implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "TASK_PARTICIPANT",
+            joinColumns = { @JoinColumn(name = "TASK_SOMEONE", referencedColumnName = "ID") },
+            inverseJoinColumns = { @JoinColumn(name = "T_USER", referencedColumnName = "ID") }
+    )
+    private List<User> participants;
+    
     public TaskSomeone(){
         mediaList = new ArrayList<>();
+        participants = new ArrayList<>();
     }
 
     public Long getId() {
@@ -104,7 +110,15 @@ public class TaskSomeone implements Serializable{
         this.createdOn = createdOn;
     }
 
-    @Override
+    public List<User> getParticipants() {
+		return participants;
+	}
+
+	public void setParticipants(List<User> participants) {
+		this.participants = participants;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TaskSomeone)) return false;

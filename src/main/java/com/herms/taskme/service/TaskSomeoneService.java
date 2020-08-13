@@ -1,10 +1,13 @@
 package com.herms.taskme.service;
 
 import com.herms.taskme.dto.MediaForCreationDTO;
+import com.herms.taskme.enums.ApplicationStatus;
 import com.herms.taskme.model.Media;
+import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.TaskSomeone;
 import com.herms.taskme.model.User;
 import com.herms.taskme.repository.TaskSomeoneRepository;
+import javafx.concurrent.Task;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskSomeoneService {
@@ -31,6 +35,8 @@ public class TaskSomeoneService {
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private TaskApplicationService taskApplicationService;
 
     public TaskSomeoneService() {
     }
@@ -109,6 +115,19 @@ public class TaskSomeoneService {
         System.out.println("After remove media from tasksomeone");
         mediaService.deleteMediaIdListAsync(toBeDeletedMediaIdList);
         System.out.println("After call delete Media List");
+        return taskSomeoneRepository.save(taskSomeone);
+    }
+
+	public TaskSomeone terminateApplications(TaskSomeone taskSomeone) {
+		List<TaskApplication> approvedApplications = taskApplicationService.getAllTaskApplicationByTaskIdAndStatus(taskSomeone.getId(), ApplicationStatus.ACCEPTED);
+        taskSomeone.setParticipants(approvedApplications.stream()
+                                        .map(TaskApplication::getUser)
+                                        .collect(Collectors.toList()));
+		return taskSomeoneRepository.save(taskSomeone);
+	}
+
+	public TaskSomeone openApplications(TaskSomeone taskSomeone) {
+        taskSomeone.getParticipants().clear();
         return taskSomeoneRepository.save(taskSomeone);
     }
 }

@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     @Query("select ta.user from TaskApplication ta where ta.taskSomeone.id = :taskSomeoneId order by created_on")
 	public List<User> findAllTaskApplicantsByTaskSomeone_IdOrderByCreatedOnDesc(@Param("taskSomeoneId") Long taskSomeoneId);
+
+    @Query("select u from TaskSomeone ts join ts.participants u where ts.id = :taskId")
+    public List<User> findAllUsersParticipatingInTask(@Param("taskId") Long taskId);
 }

@@ -36,6 +36,10 @@ public class TaskApplicationService {
         return taskApplicationRepository.findAllByTaskSomeone_IdOrderByCreatedOnDesc(taskSomeoneId);
     }
 
+    public List<TaskApplication> getAllTaskApplicationByTaskIdAndStatus(Long taskSomeoneId, ApplicationStatus status){
+        return taskApplicationRepository.findAllByTaskSomeoneAndStatus(taskSomeoneId, status);
+    }
+    
     public Page<TaskApplication> getAllTaskApplicationByTaskIdAndStatusPaginated(Pageable pageable, Long taskSomeoneId, String term, ApplicationStatus status){
         return taskApplicationRepository.findAllByTaskSomeoneAndTitleContainingIgnoreCaseAndStatusOrderByCreatedOnDesc(pageable, taskSomeoneId, term, status);
     }

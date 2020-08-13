@@ -105,7 +105,8 @@ public class TaskSomeoneConverter {
 			context.getDestination().setTaskApplicants(applicantionsDTO);
 			boolean alreadyApplied = applicantionsDTO.stream().anyMatch((application) -> application.getUser().getId().equals(principal.getId()));
 			context.getDestination().setAlreadyApplied(alreadyApplied);
-
+			List<User> participants = userRepository.findAllUsersParticipatingInTask(context.getSource().getId());
+			context.getDestination().setParticipants(participants.stream().map(p -> new UserDTO(p)).collect(Collectors.toList()));
 			return context.getDestination();
 		}
 	};

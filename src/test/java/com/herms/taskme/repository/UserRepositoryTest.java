@@ -69,12 +69,10 @@ public class UserRepositoryTest {
 	@Test
 	public void whenCreateWhenUsernameIsNullShouldThrownConstraintViolationException() {
 		User user = new User(null, null, "Ribeiro Junior", "994457676", "Rua Joana da Silva, 139, Uberlândia", "teste", "123456");
-		
 		Exception exception = assertThrows(
-							ConstraintViolationException.class, 
-							() -> this.userRepository.save(user));
-		
-		assertTrue(exception.getMessage().contains("size must be between 1 and 50"));
+							ConstraintViolationException.class,
+							() -> this.userRepository.saveAndFlush(user));
+		assertTrue(exception.getMessage().contains("Given name is a mandatory field, please fill it"));
 	}
 
 }

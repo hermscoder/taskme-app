@@ -29,7 +29,7 @@ public class CorsFilter implements Filter {
         if (CorsUtils.isPreFlightRequest(request)) {
             response.setStatus(response.SC_OK);
         }
-        response.setHeader("Access-Control-Allow-Origin", env.getProperty("allow.origin.url"));
+		response.setHeader("Access-Control-Allow-Origin", env.getProperty("allow.origin.url"));
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT, PATCH, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, X-Auth-Token, Authorization");
         response.setHeader("Access-Control-Allow-Credentials", "true");

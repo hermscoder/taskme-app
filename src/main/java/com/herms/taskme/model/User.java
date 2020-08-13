@@ -16,9 +16,6 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-//    @Id
-//    @GeneratedValue(generator = "SQ_USER")
-//    @SequenceGenerator(name = "SQ_USER", sequenceName = "SQ_USER", allocationSize = 1)
     @Id
     @GeneratedValue
     @Column(name = "ID", nullable = false)

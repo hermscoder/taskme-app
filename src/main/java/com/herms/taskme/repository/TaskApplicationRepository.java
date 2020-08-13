@@ -29,4 +29,6 @@ public interface TaskApplicationRepository extends CrudRepository<TaskApplicatio
 	
 	@Query("select ta from TaskApplication ta where ta.user.id = :userId order by created_on")
 	public List<TaskApplication> findAllByUser_IdOrderByCreatedOnDesc(@Param("userId") Long userId);
+	@Query("select ta from TaskApplication ta where ta.taskSomeone.id = :taskSomeoneId AND (:status is null or ta.status = :status)")
+	public List<TaskApplication> findAllByTaskSomeoneAndStatus(Long taskSomeoneId, @Param("status") ApplicationStatus status);
 }

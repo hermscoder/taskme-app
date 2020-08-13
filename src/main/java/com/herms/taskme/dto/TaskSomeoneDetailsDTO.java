@@ -21,7 +21,7 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     private Boolean ownTask;
     private List<TaskApplicationForListDTO> taskApplicants;
     private Boolean alreadyApplied;
-    
+    private List<UserDTO> participants;
     
     public TaskSomeoneDetailsDTO() {
     }
@@ -105,4 +105,11 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
 	public void setAlreadyApplied(Boolean alreadyApplied) {
 		this.alreadyApplied = alreadyApplied;
 	}
+
+    public List<UserDTO> getParticipants() {
+        return participants;
+    }
+    public void setParticipants(List<UserDTO> participants) {
+        this.participants = participants;
+    }
 }

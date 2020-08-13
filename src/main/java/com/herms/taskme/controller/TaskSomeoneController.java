@@ -171,5 +171,16 @@ public class TaskSomeoneController {
         Page<TaskSomeoneForListDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map(TaskSomeoneForListDTO::new);
         return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
     }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone/terminateApplications")
+    public ResponseEntity<TaskSomeoneDetailsDTO> terminateApplications(@RequestBody TaskSomeoneForListDTO taskSomeone){
 
+        return new ResponseEntity<>(taskSomeoneConverter.toDTO(taskSomeoneService.terminateApplications(taskSomeoneConverter.fromDTO(taskSomeone)), TaskSomeoneDetailsDTO.class), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone/openApplications")
+    public ResponseEntity<TaskSomeoneDetailsDTO> openApplications(@RequestBody TaskSomeoneForListDTO taskSomeone){
+
+        return new ResponseEntity<>(taskSomeoneConverter.toDTO(taskSomeoneService.openApplications(taskSomeoneConverter.fromDTO(taskSomeone)), TaskSomeoneDetailsDTO.class), HttpStatus.OK);
+    }
 }
