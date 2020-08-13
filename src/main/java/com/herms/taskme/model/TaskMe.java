@@ -17,9 +17,6 @@ public class TaskMe implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-//    @Id
-//    @GeneratedValue(generator = "SQ_TASK_ME")
-//    @SequenceGenerator(name = "SQ_TASK_ME", sequenceName = "SQ_TASK_ME", allocationSize = 1)
     @Id
     @GeneratedValue
     private Long id;
