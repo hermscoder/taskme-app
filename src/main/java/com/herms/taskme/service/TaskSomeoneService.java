@@ -56,7 +56,11 @@ public class TaskSomeoneService {
     public Page<TaskSomeone> getAllTaskSomeoneCreatedByUserIdPaginated(Pageable pageable, Long userId, String term){
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
     }
-    
+
+    public Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term){
+        return taskSomeoneRepository.findAllTasksThatUserIsParticipatingPaginated(pageable, userId, term);
+    }
+
     public Page<TaskSomeone> getAllUserTaskApplicationsPaginated(Pageable pageable, Long userId, String term){
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
     }

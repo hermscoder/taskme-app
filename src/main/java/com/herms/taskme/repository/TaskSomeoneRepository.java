@@ -25,5 +25,7 @@ public interface TaskSomeoneRepository extends CrudRepository<TaskSomeone, Long>
     
     @Query("select ta.taskSomeone from TaskApplication ta where ta.user.id = :userId AND ta.status = 'A' order by created_on")
     public List<TaskSomeone> findAllPreviousTasksFromUserIdOrderByCreatedOnDesc(@Param("userId") Long userId);
-    
+
+    @Query("select ts from TaskSomeone ts where exists(select 1 from ts.participants p where p.id = :userId) and UPPER(ts.title) like CONCAT('%', UPPER(:term), '%') order by ts.createdOn")
+    public Page<TaskSomeone> findAllTasksThatUserIsParticipatingPaginated(Pageable pageable, @Param("userId")Long userId, @Param("term")String term);
 }

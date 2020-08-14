@@ -183,4 +183,22 @@ public class TaskSomeoneController {
 
         return new ResponseEntity<>(taskSomeoneConverter.toDTO(taskSomeoneService.openApplications(taskSomeoneConverter.fromDTO(taskSomeone)), TaskSomeoneDetailsDTO.class), HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/currentTasks")
+    public ResponseEntity<Page<TaskSomeone>> getCreatedTasksPaginated(@RequestParam(value="page", defaultValue = "0") Integer pageNumber,
+                                                                      @RequestParam(value="linesPerPage", defaultValue = "20") Integer linesPerPage,
+                                                                      @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
+                                                                      @RequestParam(value="direction", defaultValue = "DESC") String direction,
+                                                                      @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) throws Exception {
+
+        User principal = customUserDetailsService.getLoggedUser();
+        if(principal == null){
+            throw new Exception("You don't have access to this function");
+        }
+        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTasksThatUserIsParticipatingPaginated(pageRequest, principal.getId(), searchTerm);
+
+        return new ResponseEntity<>(taskSomeoneCreatedBy, HttpStatus.OK);
+
+    }
 }
