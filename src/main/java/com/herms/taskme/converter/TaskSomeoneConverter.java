@@ -95,6 +95,7 @@ public class TaskSomeoneConverter {
 			context.getDestination().setLocation(context.getSource().getLocation());
 			context.getDestination().setTitle(context.getSource().getTitle());
 			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
+			context.getDestination().setDueDate(context.getSource().getDueDate());
 			context.getDestination().setMediaList(context.getSource().getMediaList());
 			User principal = customUserDetailsService.getLoggedUser();
 			context.getDestination().setOwnTask(principal.getId().equals(context.getSource().getUser().getId()));
@@ -121,6 +122,7 @@ public class TaskSomeoneConverter {
 			context.getDestination().setDescription(context.getSource().getDescription());
 			context.getDestination().setLocation(context.getSource().getLocation());
 			context.getDestination().setTitle(context.getSource().getTitle());
+			context.getDestination().setDueDate(context.getSource().getDueDate());
 			context.getDestination().setUser(userRepository.getOne(context.getSource().getUser().getId()));
 
 			return context.getDestination();

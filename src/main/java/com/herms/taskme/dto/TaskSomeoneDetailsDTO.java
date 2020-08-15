@@ -16,6 +16,7 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     private String description;
     private String location;
     private UserDTO user;
+    private Date dueDate;
     private List<Media> mediaList;
     private Date createdOn;
     private Boolean ownTask;
@@ -111,5 +112,12 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     }
     public void setParticipants(List<UserDTO> participants) {
         this.participants = participants;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 }

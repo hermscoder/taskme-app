@@ -41,6 +41,10 @@ public class TaskSomeone implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
+    @Column(name = "DUE_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dueDate;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "TASK_PARTICIPANT",
@@ -118,7 +122,15 @@ public class TaskSomeone implements Serializable{
 		this.participants = participants;
 	}
 
-	@Override
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TaskSomeone)) return false;

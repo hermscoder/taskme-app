@@ -11,6 +11,17 @@ import java.util.List;
 
 public class TaskSomeoneForListDTO extends DataTransferObject {
 
+    private Long id;
+    private String title;
+    private String description;
+    private String location;
+    private UserDTO user;
+    private Date dueDate;
+    private List<Media> mediaList;
+    private Date createdOn;
+    private String infoUrl;
+
+
     public TaskSomeoneForListDTO() {
     }
 
@@ -22,28 +33,12 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
         user = new UserDTO(taskSomeone.getUser());
         mediaList = taskSomeone.getMediaList();
         createdOn = taskSomeone.getCreatedOn();
+        dueDate = taskSomeone.getDueDate();
     }
-
-    private Long id;
-
-    private String title;
-
-    private String description;
-
-    private String location;
-
-    private UserDTO user;
-
-    private List<Media> mediaList;
-
-    private Date createdOn;
-    
-    private String infoUrl;
 
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -51,7 +46,6 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -59,7 +53,6 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -67,7 +60,6 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     public String getLocation() {
         return location;
     }
-
     public void setLocation(String location) {
         this.location = location;
     }
@@ -75,7 +67,6 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     public UserDTO getUser() {
         return user;
     }
-
     public void setUser(UserDTO user) {
         this.user = user;
     }
@@ -83,7 +74,6 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     public List<Media> getMediaList() {
         return mediaList;
     }
-
     public void setMediaList(List<Media> mediaList) {
         this.mediaList = mediaList;
     }
@@ -91,8 +81,14 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     public Date getCreatedOn() {
         return createdOn;
     }
-
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 }
