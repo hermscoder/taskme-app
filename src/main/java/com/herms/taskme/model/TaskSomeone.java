@@ -1,6 +1,7 @@
 package com.herms.taskme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.herms.taskme.converter.TaskStateConverter;
 import com.herms.taskme.enums.TaskState;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -47,9 +48,8 @@ public class TaskSomeone implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "STATE", nullable = false)
-    @ColumnDefault("'CR'")
+    @Convert(converter = TaskStateConverter.class)
+    @Column(name = "STATE", nullable = true)
     private TaskState state;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

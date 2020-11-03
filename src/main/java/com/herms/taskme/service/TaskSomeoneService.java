@@ -2,6 +2,7 @@ package com.herms.taskme.service;
 
 import com.herms.taskme.dto.MediaForCreationDTO;
 import com.herms.taskme.enums.ApplicationStatus;
+import com.herms.taskme.enums.TaskState;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.TaskSomeone;
@@ -119,11 +120,13 @@ public class TaskSomeoneService {
         taskSomeone.setParticipants(approvedApplications.stream()
                                         .map(TaskApplication::getUser)
                                         .collect(Collectors.toList()));
+        taskSomeone.setState(TaskState.APPLICATIONS_CLOSED);
 		return taskSomeoneRepository.save(taskSomeone);
 	}
 
 	public TaskSomeone openApplications(TaskSomeone taskSomeone) {
         taskSomeone.getParticipants().clear();
+        taskSomeone.setState(TaskState.APPLICATIONS_OPEN);
         return taskSomeoneRepository.save(taskSomeone);
     }
 }

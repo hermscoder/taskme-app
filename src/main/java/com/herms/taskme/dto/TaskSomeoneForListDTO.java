@@ -1,5 +1,6 @@
 package com.herms.taskme.dto;
 
+import com.herms.taskme.enums.TaskState;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.TaskSomeone;
 import com.herms.taskme.model.User;
@@ -20,7 +21,7 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     private List<Media> mediaList;
     private Date createdOn;
     private String infoUrl;
-
+    private String state;
 
     public TaskSomeoneForListDTO() {
     }
@@ -34,6 +35,7 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
         mediaList = taskSomeone.getMediaList();
         createdOn = taskSomeone.getCreatedOn();
         dueDate = taskSomeone.getDueDate();
+        state = taskSomeone.getState().getCode();
     }
 
     public Long getId() {
@@ -90,5 +92,13 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     }
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

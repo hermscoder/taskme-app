@@ -23,7 +23,8 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     private List<TaskApplicationForListDTO> taskApplicants;
     private Boolean alreadyApplied;
     private List<UserDTO> participants;
-    
+    private String state;
+
     public TaskSomeoneDetailsDTO() {
     }
 
@@ -119,5 +120,13 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     }
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

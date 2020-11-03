@@ -4,8 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.herms.taskme.enums.TaskState;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
@@ -22,6 +24,7 @@ import com.herms.taskme.model.User;
 import com.herms.taskme.repository.UserRepository;
 import com.herms.taskme.service.CustomUserDetailsService;
 import com.herms.taskme.service.TaskApplicationService;
+import org.springframework.util.StringUtils;
 
 @Service
 public class TaskSomeoneConverter {
@@ -96,10 +99,12 @@ public class TaskSomeoneConverter {
 			context.getDestination().setTitle(context.getSource().getTitle());
 			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
 			context.getDestination().setDueDate(context.getSource().getDueDate());
+			context.getDestination().setState(!Objects.isNull(context.getSource().getState())
+																		? context.getSource().getState().getCode()
+																		: null);
 			context.getDestination().setMediaList(context.getSource().getMediaList());
 			User principal = customUserDetailsService.getLoggedUser();
 			context.getDestination().setOwnTask(principal.getId().equals(context.getSource().getUser().getId()));
-
 			
 			List<TaskApplication> applicantions = taskApplicationService.getAllTaskApplicationByTaskId(context.getDestination().getId());
 			List<TaskApplicationForListDTO> applicantionsDTO = taskApplicationConverter.toDTO(applicantions, TaskApplicationForListDTO.class);
@@ -123,6 +128,7 @@ public class TaskSomeoneConverter {
 			context.getDestination().setLocation(context.getSource().getLocation());
 			context.getDestination().setTitle(context.getSource().getTitle());
 			context.getDestination().setDueDate(context.getSource().getDueDate());
+			context.getDestination().setState(TaskState.toEnum(context.getSource().getState()));
 			context.getDestination().setUser(userRepository.getOne(context.getSource().getUser().getId()));
 
 			return context.getDestination();

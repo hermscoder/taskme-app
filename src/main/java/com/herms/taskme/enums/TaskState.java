@@ -2,12 +2,12 @@ package com.herms.taskme.enums;
 
 public enum TaskState {
 
-    CREATED("Created","CR"),
-    APPLICATIONS_OPEN("Applications Open","AO"),
-    APPLICATIONS_CLOSED("Applications Closed", "AC"),
-    STARTED("Started", "ST"),
-    DONE("Done","DO"),
-    CANCELLED("Cancelled", "CN");
+    CREATED("CR", "Created"),
+    APPLICATIONS_OPEN("AO", "Applications Open"),
+    APPLICATIONS_CLOSED("AC", "Applications Closed"),
+    STARTED( "ST", "Started"),
+    DONE("DO", "Done"),
+    CANCELLED("CN", "Cancelled");
 
     private String code;
     private String description;
@@ -20,7 +20,7 @@ public enum TaskState {
     public String getCode() {
         return code;
     }
-    public TaskState toEnum(String code){
+    public static TaskState toEnum(String code){
         for(TaskState task : values()){
             if(task.getCode().equals(code)) {
                 return task;
