@@ -56,9 +56,9 @@ public class User implements Serializable {
 //    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
 //    private List<TaskSomeone> taskSomeoneList = new ArrayList<>();
 //
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<Worksheet> worksheetList = new ArrayList<>();
-//
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Worksheet> worksheetList = new ArrayList<>();
+
 
     public User(){
 
@@ -174,22 +174,13 @@ public class User implements Serializable {
 //        this.taskSomeoneList = taskSomeoneList;
 //    }
 //
-//    @XmlTransient
-//    public List<Worksheet> getWorksheetList() {
-//        return worksheetList;
-//    }
-//
-//    public void setWorksheetList(List<Worksheet> worksheetList) {
-//        this.worksheetList = worksheetList;
-//    }
-//    @XmlTransient
-//    public List<Media> getMediaList() {
-//        return mediaList;
-//    }
-//
-//    public void setMediaList(List<Media> mediaList) {
-//        this.mediaList = mediaList;
-//    }
+    public List<Worksheet> getWorksheetList() {
+        return worksheetList;
+    }
+
+    public void setWorksheetList(List<Worksheet> worksheetList) {
+        this.worksheetList = worksheetList;
+    }
 
     @Override
     public boolean equals(Object o) {

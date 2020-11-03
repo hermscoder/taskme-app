@@ -45,6 +45,9 @@ public class TaskSomeone implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
+//  TODO ADD STATE
+//CREATED -> PUBLISHED
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "TASK_PARTICIPANT",
