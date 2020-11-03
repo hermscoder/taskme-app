@@ -1,6 +1,8 @@
 package com.herms.taskme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.herms.taskme.enums.TaskState;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -45,8 +47,10 @@ public class TaskSomeone implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
-//  TODO ADD STATE
-//CREATED -> PUBLISHED
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATE", nullable = false)
+    @ColumnDefault("'CR'")
+    private TaskState state;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
@@ -131,6 +135,14 @@ public class TaskSomeone implements Serializable{
 
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public TaskState getState() {
+        return state;
+    }
+
+    public void setState(TaskState state) {
+        this.state = state;
     }
 
     @Override
