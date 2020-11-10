@@ -2,6 +2,7 @@ package com.herms.taskme.service;
 
 import com.herms.taskme.dto.MediaForCreationDTO;
 import com.herms.taskme.enums.ApplicationStatus;
+import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.enums.TaskState;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.TaskApplication;
@@ -15,9 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,11 +59,30 @@ public class TaskSomeoneService {
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
     }
 
-    public Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term){
-        return taskSomeoneRepository.findAllTasksThatUserIsParticipatingPaginated(pageable, userId, term);
+    public Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, Boolean periodicTasks, Date createdOn, Integer numberOfDaysToLookUp) {
+        List<String> frequencies = null;
+        if(periodicTasks){
+            frequencies = Arrays.asList(FrequencyEnum.values()).stream().map(FrequencyEnum::getCode).collect(Collectors.toList());
+        }
+        return getAllTasksThatUserIsParticipatingPaginated(pageable, userId, term, Arrays.asList(FrequencyEnum.values()), createdOn, numberOfDaysToLookUp);
+    }
+    private Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, List<FrequencyEnum> frequencies, Date createdOn, Integer dateOffset){
+        Date createdOnEnd = null;
+        if(createdOn != null) {
+            createdOnEnd = createdOn;
+
+            Calendar c = Calendar.getInstance();
+            c.setTime(createdOnEnd);
+            c.add(Calendar.DATE, dateOffset);
+            createdOnEnd = c.getTime();
+
+            return taskSomeoneRepository.findAllTasksThatUserIsParticipatingInAPeriodPaginated(pageable, userId, term, frequencies, createdOn, createdOnEnd);
+        }
+
+        return taskSomeoneRepository.findAllTasksThatUserIsParticipatingPaginated(pageable, userId, term, frequencies);
     }
 
-    public Page<TaskSomeone> getAllUserTaskApplicationsPaginated(Pageable pageable, Long userId, String term){
+    private Page<TaskSomeone> getAllUserTaskApplicationsPaginated(Pageable pageable, Long userId, String term){
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
     }
 
@@ -118,15 +136,6 @@ public class TaskSomeoneService {
         return taskSomeoneRepository.save(taskSomeone);
     }
 
-	public TaskSomeone terminateApplications(TaskSomeone taskSomeone) {
-		List<TaskApplication> approvedApplications = taskApplicationService.getAllTaskApplicationByTaskIdAndStatus(taskSomeone.getId(), ApplicationStatus.ACCEPTED);
-        taskSomeone.setParticipants(approvedApplications.stream()
-                                        .map(TaskApplication::getUser)
-                                        .collect(Collectors.toList()));
-        taskSomeone.setState(TaskState.APPLICATIONS_CLOSED);
-		return taskSomeoneRepository.save(taskSomeone);
-	}
-
 	public TaskSomeone openApplications(TaskSomeone taskSomeone) {
         taskSomeone.getParticipants().clear();
         taskSomeone.setState(TaskState.APPLICATIONS_OPEN);
@@ -138,6 +147,7 @@ public class TaskSomeoneService {
         if(nextState != null) {
             stateService.validateTaskStateChange(taskSomeone, nextState);
             taskSomeone.setState(nextState);
+            stateService.executeAfterStateSetProcedures(taskSomeone, nextState);
         }
         taskSomeoneRepository.save(taskSomeone);
         return taskSomeone;
@@ -148,6 +158,7 @@ public class TaskSomeoneService {
         if(previousState != null) {
             stateService.validateTaskStateChange(taskSomeone, previousState);
             taskSomeone.setState(previousState);
+            stateService.executeAfterStateSetProcedures(taskSomeone, previousState);
         }
         taskSomeoneRepository.save(taskSomeone);
         return taskSomeone;
