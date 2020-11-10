@@ -2,12 +2,13 @@ package com.herms.taskme.converter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.enums.TaskState;
+import com.herms.taskme.service.TaskSomeoneService;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
@@ -17,14 +18,12 @@ import org.springframework.stereotype.Service;
 import com.herms.taskme.dto.TaskApplicationForListDTO;
 import com.herms.taskme.dto.TaskSomeoneDetailsDTO;
 import com.herms.taskme.dto.UserDTO;
-import com.herms.taskme.model.Message;
 import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.TaskSomeone;
 import com.herms.taskme.model.User;
 import com.herms.taskme.repository.UserRepository;
 import com.herms.taskme.service.CustomUserDetailsService;
 import com.herms.taskme.service.TaskApplicationService;
-import org.springframework.util.StringUtils;
 
 @Service
 public class TaskSomeoneConverter {
@@ -37,6 +36,8 @@ public class TaskSomeoneConverter {
 	private TaskApplicationService taskApplicationService;
 	@Autowired
 	private TaskApplicationConverter taskApplicationConverter;
+	@Autowired
+	private TaskSomeoneService taskSomeoneService;
 
 	private ModelMapper modelMapper;
 
@@ -98,10 +99,20 @@ public class TaskSomeoneConverter {
 			context.getDestination().setLocation(context.getSource().getLocation());
 			context.getDestination().setTitle(context.getSource().getTitle());
 			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
-			context.getDestination().setDueDate(context.getSource().getDueDate());
+			context.getDestination().setFrequency(!Objects.isNull(context.getSource().getFrequency())
+							? context.getSource().getFrequency().getCode()
+							: null);
+			context.getDestination().setStartDate(context.getSource().getStartDate());
+			context.getDestination().setEndDate(context.getSource().getEndDate());
 			context.getDestination().setState(!Objects.isNull(context.getSource().getState())
 																		? context.getSource().getState().getCode()
 																		: null);
+			context.getDestination().setNextState(!Objects.isNull(context.getSource().getState())
+					? taskSomeoneService.getNextTaskState(context.getSource().getState().getCode())
+					: null);
+			context.getDestination().setPreviousState(!Objects.isNull(context.getSource().getState())
+					? taskSomeoneService.getPreviousTaskState(context.getSource().getState().getCode())
+					: null);
 			context.getDestination().setMediaList(context.getSource().getMediaList());
 			User principal = customUserDetailsService.getLoggedUser();
 			context.getDestination().setOwnTask(principal.getId().equals(context.getSource().getUser().getId()));
@@ -127,7 +138,9 @@ public class TaskSomeoneConverter {
 			context.getDestination().setDescription(context.getSource().getDescription());
 			context.getDestination().setLocation(context.getSource().getLocation());
 			context.getDestination().setTitle(context.getSource().getTitle());
-			context.getDestination().setDueDate(context.getSource().getDueDate());
+			context.getDestination().setFrequency(FrequencyEnum.toEnum(context.getSource().getFrequency()));
+			context.getDestination().setStartDate(context.getSource().getStartDate());
+			context.getDestination().setEndDate(context.getSource().getEndDate());
 			context.getDestination().setState(TaskState.toEnum(context.getSource().getState()));
 			context.getDestination().setUser(userRepository.getOne(context.getSource().getUser().getId()));
 

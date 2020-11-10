@@ -1,13 +1,14 @@
 package com.herms.taskme.converter;
 
+import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.enums.TaskState;
 
 import javax.persistence.AttributeConverter;
 
-public class TaskStateConverter implements AttributeConverter<TaskState, Integer> {
+public class FrequencyConverter implements AttributeConverter<FrequencyEnum, String> {
 
     @Override
-    public Integer convertToDatabaseColumn(TaskState attribute) {
+    public String convertToDatabaseColumn(FrequencyEnum attribute) {
         if(attribute != null) {
             return attribute.getCode();
         }
@@ -15,9 +16,9 @@ public class TaskStateConverter implements AttributeConverter<TaskState, Integer
     }
 
     @Override
-    public TaskState convertToEntityAttribute(Integer dbData) {
+    public FrequencyEnum convertToEntityAttribute(String dbData) {
         if(dbData != null) {
-            return TaskState.toEnum(dbData);
+            return FrequencyEnum.toEnum(dbData);
         }
         return null;
     }

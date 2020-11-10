@@ -30,6 +30,8 @@ public class TaskSomeoneService {
     private MediaService mediaService;
     @Autowired
     private TaskApplicationService taskApplicationService;
+    @Autowired
+    private StateService stateService;
 
     public TaskSomeoneService() {
     }
@@ -47,7 +49,7 @@ public class TaskSomeoneService {
     }
     
     public Page<TaskSomeone> getAllTaskSomeonePaginated(Pageable pageable, String searchTerm){
-        return taskSomeoneRepository.findByTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, searchTerm);
+        return taskSomeoneRepository.findByTitleContainingIgnoreCaseAndStateOrderByCreatedOnDesc(pageable, searchTerm, TaskState.APPLICATIONS_OPEN);
     }
 
     public TaskSomeone getTaskSomeone(Long id){
@@ -68,6 +70,7 @@ public class TaskSomeoneService {
 
     public TaskSomeone addTaskSomeone(TaskSomeone taskSomeone){
         taskSomeone.setCreatedOn(new Date());
+        taskSomeone.setState(TaskState.CREATED);
         taskSomeone.setUser(customUserDetailsService.getLoggedUser());
         return taskSomeoneRepository.save(taskSomeone);
     }
@@ -128,5 +131,73 @@ public class TaskSomeoneService {
         taskSomeone.getParticipants().clear();
         taskSomeone.setState(TaskState.APPLICATIONS_OPEN);
         return taskSomeoneRepository.save(taskSomeone);
+    }
+
+    public TaskSomeone changeTaskToNextState(TaskSomeone taskSomeone) throws Exception {
+        TaskState nextState = getNextTaskState(taskSomeone.getState());
+        if(nextState != null) {
+            stateService.validateTaskStateChange(taskSomeone, nextState);
+            taskSomeone.setState(nextState);
+        }
+        taskSomeoneRepository.save(taskSomeone);
+        return taskSomeone;
+    }
+
+    public TaskSomeone changeTaskToPreviousState(TaskSomeone taskSomeone) throws Exception {
+        TaskState previousState = getPreviousTaskState(taskSomeone.getState());
+        if(previousState != null) {
+            stateService.validateTaskStateChange(taskSomeone, previousState);
+            taskSomeone.setState(previousState);
+        }
+        taskSomeoneRepository.save(taskSomeone);
+        return taskSomeone;
+    }
+
+    public TaskSomeone changeTaskToCancelled(TaskSomeone taskSomeone) {
+        taskSomeone.setState(TaskState.CANCELLED);
+        taskSomeoneRepository.save(taskSomeone);
+        return taskSomeone;
+    }
+
+    public Integer getNextTaskState(int stateCode) {
+        TaskState nextTaskState = getNextTaskState(TaskState.toEnum(stateCode));
+        if(nextTaskState != null) {
+            return nextTaskState.getCode();
+        }
+        return null;
+    }
+
+    public TaskState getNextTaskState(TaskState state) {
+        if (state == TaskState.CREATED) {
+            return TaskState.APPLICATIONS_OPEN;
+        } else if (state == TaskState.APPLICATIONS_OPEN) {
+            return  TaskState.APPLICATIONS_CLOSED;
+        } else if (state == TaskState.APPLICATIONS_CLOSED) {
+            return  TaskState.STARTED;
+        } else if (state == TaskState.STARTED) {
+            return  TaskState.DONE;
+        }
+        return null;
+    }
+
+    public Integer getPreviousTaskState(int stateCode) {
+        TaskState previousState = getPreviousTaskState(TaskState.toEnum(stateCode));
+        if(previousState != null) {
+            return previousState.getCode();
+        }
+        return null;
+    }
+
+    public TaskState getPreviousTaskState(TaskState state) {
+        if (state == TaskState.APPLICATIONS_OPEN) {
+            return TaskState.CREATED;
+        } else if (state == TaskState.APPLICATIONS_CLOSED) {
+            return TaskState.APPLICATIONS_OPEN;
+        } else if (state == TaskState.STARTED) {
+            return TaskState.APPLICATIONS_CLOSED;
+        } else if (state == TaskState.DONE) {
+            return TaskState.STARTED;
+        }
+        return null;
     }
 }

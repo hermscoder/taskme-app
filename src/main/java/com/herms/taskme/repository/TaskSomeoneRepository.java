@@ -2,6 +2,7 @@ package com.herms.taskme.repository;
 
 import java.util.List;
 
+import com.herms.taskme.enums.TaskState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -18,8 +19,7 @@ public interface TaskSomeoneRepository extends CrudRepository<TaskSomeone, Long>
 
     public List<TaskSomeone> findAllByOrderByCreatedOnDesc();
     public Page<TaskSomeone> findAllByOrderByCreatedOnDesc(Pageable pageable);
-    public Page<TaskSomeone> findByTitleContainingIgnoreCaseOrderByCreatedOnDesc(Pageable pageable, String term);
-
+    public Page<TaskSomeone> findByTitleContainingIgnoreCaseAndStateOrderByCreatedOnDesc(Pageable pageable, String term, TaskState status);
     public Page<TaskSomeone> findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(Pageable pageable, Long userId, String term);
     public Page<TaskSomeone> findAllByUserOrderByCreatedOnDesc(User user, Pageable pageable);
     

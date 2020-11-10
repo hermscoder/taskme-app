@@ -1,12 +1,10 @@
 package com.herms.taskme.dto;
 
+import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.TaskSomeone;
-import com.herms.taskme.model.User;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class TaskSomeoneDetailsDTO extends DataTransferObject {
@@ -16,14 +14,18 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     private String description;
     private String location;
     private UserDTO user;
-    private Date dueDate;
+    private String frequency;
+    private Date startDate;
+    private Date endDate;
     private List<Media> mediaList;
     private Date createdOn;
     private Boolean ownTask;
     private List<TaskApplicationForListDTO> taskApplicants;
     private Boolean alreadyApplied;
     private List<UserDTO> participants;
-    private String state;
+    private Integer state;
+    private Integer nextState;
+    private Integer previousState;
 
     public TaskSomeoneDetailsDTO() {
     }
@@ -115,18 +117,45 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
         this.participants = participants;
     }
 
-    public Date getDueDate() {
-        return dueDate;
+    public String getFrequency() {
+        return frequency;
     }
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
     }
 
-    public String getState() {
+    public Date getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getState() {
         return state;
     }
-
-    public void setState(String state) {
+    public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Integer getPreviousState() {
+        return previousState;
+    }
+    public void setPreviousState(Integer previousState) {
+        this.previousState = previousState;
+    }
+
+    public Integer getNextState() {
+        return nextState;
+    }
+    public void setNextState(Integer nextState) {
+        this.nextState = nextState;
     }
 }

@@ -1,14 +1,12 @@
 package com.herms.taskme.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.herms.taskme.converter.FrequencyConverter;
 import com.herms.taskme.converter.TaskStateConverter;
+import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.enums.TaskState;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,9 +42,17 @@ public class TaskSomeone implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
-    @Column(name = "DUE_DATE")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dueDate;
+    @Convert(converter = FrequencyConverter.class)
+    @Column(name = "FREQUENCY", length = 2)
+    private FrequencyEnum frequency;
+
+    @Column(name = "START_DATE")
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
+
+    @Column(name = "END_DATE")
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
 
     @Convert(converter = TaskStateConverter.class)
     @Column(name = "STATE", nullable = true)
@@ -129,12 +135,28 @@ public class TaskSomeone implements Serializable{
 		this.participants = participants;
 	}
 
-    public Date getDueDate() {
-        return dueDate;
+    public FrequencyEnum getFrequency() {
+        return frequency;
     }
 
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
+    public void setFrequency(FrequencyEnum frequencyEnum) {
+        this.frequency = frequencyEnum;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public TaskState getState() {

@@ -1,14 +1,9 @@
 package com.herms.taskme.dto;
 
-import com.herms.taskme.enums.TaskState;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.TaskSomeone;
-import com.herms.taskme.model.User;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 public class TaskSomeoneForListDTO extends DataTransferObject {
 
@@ -17,11 +12,13 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
     private String description;
     private String location;
     private UserDTO user;
-    private Date dueDate;
+    private String frequency;
+    private Date startDate;
+    private Date endDate;
     private List<Media> mediaList;
     private Date createdOn;
     private String infoUrl;
-    private String state;
+    private Integer state;
 
     public TaskSomeoneForListDTO() {
     }
@@ -34,8 +31,10 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
         user = new UserDTO(taskSomeone.getUser());
         mediaList = taskSomeone.getMediaList();
         createdOn = taskSomeone.getCreatedOn();
-        dueDate = taskSomeone.getDueDate();
-        state = taskSomeone.getState().getCode();
+        frequency = Objects.isNull(taskSomeone.getFrequency()) ? null :  taskSomeone.getFrequency().getCode();
+        startDate = taskSomeone.getStartDate();
+        endDate = taskSomeone.getEndDate();
+        state = Objects.isNull(taskSomeone.getState()) ? null :  taskSomeone.getState().getCode();
     }
 
     public Long getId() {
@@ -80,6 +79,14 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
         this.mediaList = mediaList;
     }
 
+    public String getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
+    }
+
     public Date getCreatedOn() {
         return createdOn;
     }
@@ -87,18 +94,25 @@ public class TaskSomeoneForListDTO extends DataTransferObject {
         this.createdOn = createdOn;
     }
 
-    public Date getDueDate() {
-        return dueDate;
+    public Date getStartDate() {
+        return startDate;
     }
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public String getState() {
+    public Date getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 }

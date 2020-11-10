@@ -1,4 +1,5 @@
 package com.herms.taskme.controller;
+import com.herms.taskme.dto.ChangeStateDTO;
 import com.herms.taskme.dto.UserDTO;
 import com.herms.taskme.model.*;
 import com.herms.taskme.converter.TaskSomeoneConverter;
@@ -44,9 +45,9 @@ public class TaskSomeoneController {
             @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) {
 
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<TaskSomeone> pontoRotaList = taskSomeoneService.getAllTaskSomeonePaginated(pageRequest, searchTerm);
+        Page<TaskSomeone> taskSomeonePaginated = taskSomeoneService.getAllTaskSomeonePaginated(pageRequest, searchTerm);
 
-        return ResponseEntity.ok(pontoRotaList);
+        return ResponseEntity.ok(taskSomeonePaginated);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/listtasks")
@@ -59,7 +60,7 @@ public class TaskSomeoneController {
         return taskSomeoneService.listPreviousTasks(userId).stream().map(taskSomeone -> new TaskSomeoneForListDTO(taskSomeone)).collect(Collectors.toList());
     }
 
-    @RequestMapping("/tasksomeone/{id}")
+    @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/{id}")
     public ResponseEntity<TaskSomeoneDetailsDTO> getTaskSomeone(@PathVariable Long id) throws Exception{
     	return new ResponseEntity<>(taskSomeoneConverter.toDTO(taskSomeoneService.getTaskSomeone(id), TaskSomeoneDetailsDTO.class), HttpStatus.OK);
     }
@@ -69,18 +70,40 @@ public class TaskSomeoneController {
         return new ResponseEntity<>(new TaskSomeoneForListDTO(taskSomeoneService.addTaskSomeone(taskSomeone)), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/tasksomeone/{id}")
-    public ResponseEntity<TaskSomeoneDetailsDTO> updateTaskSomeone(@RequestBody TaskSomeone taskSomeone, @PathVariable Long id) throws Exception{
+    @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone/{id}")
+    public ResponseEntity<TaskSomeoneDetailsDTO> updateTaskSomeone(@PathVariable Long id, @RequestBody TaskSomeoneDetailsDTO taskSomeone) throws Exception{
     	User principal = customUserDetailsService.getLoggedUser();
         TaskSomeone originalTaskSomeone = taskSomeoneService.getTaskSomeone(id);
         
         if(originalTaskSomeone == null || !originalTaskSomeone.getUser().equals(principal)){
             throw new Exception("You don't have access to this function");
         }
-        
+
     	TaskSomeoneDetailsDTO dto = taskSomeoneConverter.toDTO(
-    										taskSomeoneService.updateTaskSomeone(id, taskSomeone, originalTaskSomeone)
+    										taskSomeoneService.updateTaskSomeone(id, taskSomeoneConverter.fromDTO(taskSomeone), originalTaskSomeone)
     										, TaskSomeoneDetailsDTO.class);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone/{id}/changeState")
+    public ResponseEntity<TaskSomeoneDetailsDTO> updateTaskSomeone(@PathVariable Long id, @RequestBody ChangeStateDTO changeStateDTO) throws Exception{
+        User principal = customUserDetailsService.getLoggedUser();
+        TaskSomeone task = taskSomeoneService.getTaskSomeone(id);
+
+        if(task == null || !task.getUser().equals(principal)){
+            throw new Exception("You don't have access to this function");
+        }
+
+        TaskSomeone updatedTask = null;
+        if("nextState".equals(changeStateDTO.getAction())) {
+            updatedTask = taskSomeoneService.changeTaskToNextState(task);
+        } else if("previousState".equals(changeStateDTO.getAction())) {
+            updatedTask = taskSomeoneService.changeTaskToPreviousState(task);
+        } else if ("cancelState".equals(changeStateDTO.getAction())) {
+            updatedTask = taskSomeoneService.changeTaskToCancelled(task);
+        }
+        TaskSomeoneDetailsDTO dto = taskSomeoneConverter.toDTO(updatedTask, TaskSomeoneDetailsDTO.class);
+
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
@@ -122,24 +145,6 @@ public class TaskSomeoneController {
         Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTaskSomeoneCreatedByUserIdPaginated(pageRequest, principal.getId(), searchTerm);
         Page<TaskSomeoneDetailsDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map((taskSomeone) -> taskSomeoneConverter.toDTO(taskSomeone, TaskSomeoneDetailsDTO.class));
         return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
-    }
-    @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/createdTasks/{userid}")
-    public ResponseEntity<Page<TaskSomeone>> getCreatedTasksPaginated(@PathVariable Long userid,
-                                                                       @RequestParam(value="page", defaultValue = "0") Integer pageNumber,
-                                                                       @RequestParam(value="linesPerPage", defaultValue = "4") Integer linesPerPage,
-                                                                       @RequestParam(value="orderBy", defaultValue = "id") String orderBy,
-                                                                       @RequestParam(value="direction", defaultValue = "DESC") String direction,
-                                                                       @RequestParam(value="searchTerm", defaultValue = "") String searchTerm) throws Exception {
-
-        User principal = customUserDetailsService.getLoggedUser();
-        if(userid == null || !userid.equals(principal.getId())){
-            throw new Exception("You don't have access to this function");
-        }
-        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTaskSomeonePaginated(pageRequest, searchTerm);
-
-        return new ResponseEntity<>(taskSomeoneCreatedBy, HttpStatus.OK);
-
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/tasksomeone/{taskId}/removeMedias/{toBeDeletedeMediaIdList}")
