@@ -43,8 +43,8 @@ public interface TaskSomeoneRepository extends CrudRepository<TaskSomeone, Long>
 
     @Query("select ts from TaskSomeone ts where exists(select 1 from ts.participants p where p.id = :userId) " +
                                             "and UPPER(ts.title) like CONCAT('%', UPPER(:term), '%') " +
-                                            "and ((:frequencies) IS NULL " +
-                                                    "or (:frequencies) IS NOT NULL and ts.frequency IN (:frequencies) ) " +
+                                            "and ( ts.frequency IS NULL or ((:frequencies) IS NULL " +
+                                                    "or (:frequencies) IS NOT NULL and ts.frequency IN (:frequencies)) ) " +
                                             "order by ts.createdOn")
     public Page<TaskSomeone> findAllTasksThatUserIsParticipatingPaginated(Pageable pageable, @Param("userId") Long userId, @Param("term") String term, @Param("frequencies") List<FrequencyEnum> frequencies);
 }
