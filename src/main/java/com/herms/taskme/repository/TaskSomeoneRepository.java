@@ -27,6 +27,8 @@ public interface TaskSomeoneRepository extends CrudRepository<TaskSomeone, Long>
 
     public Page<TaskSomeone> findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(Pageable pageable, Long userId, String term);
 
+    public Page<TaskSomeone> findAllByParentTask_IdOrderByEndDateAsc(Pageable pageable, Long parentTaskId);
+
     public Page<TaskSomeone> findAllByUserOrderByCreatedOnDesc(User user, Pageable pageable);
 
     @Query("select ta.taskSomeone from TaskApplication ta where ta.user.id = :userId AND ta.status = 'A' order by created_on")

@@ -26,6 +26,8 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     private Integer state;
     private Integer nextState;
     private Integer previousState;
+    private Boolean isSubTask;
+    private List<TaskSomeoneDetailsDTO> subTasks;
 
     public TaskSomeoneDetailsDTO() {
     }
@@ -157,5 +159,21 @@ public class TaskSomeoneDetailsDTO extends DataTransferObject {
     }
     public void setNextState(Integer nextState) {
         this.nextState = nextState;
+    }
+
+    public Boolean getIsSubTask() {
+        return isSubTask;
+    }
+
+    public void setIsSubTask(Boolean subTask) {
+        isSubTask = subTask;
+    }
+
+    public List<TaskSomeoneDetailsDTO> getSubTasks() {
+        return subTasks;
+    }
+
+    public void setSubTasks(List<TaskSomeoneDetailsDTO> subTasks) {
+        this.subTasks = subTasks;
     }
 }

@@ -8,6 +8,7 @@ import com.herms.taskme.model.Media;
 import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.TaskSomeone;
 import com.herms.taskme.repository.TaskSomeoneRepository;
+import com.herms.taskme.util.DateUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,6 +91,10 @@ public class TaskSomeoneService {
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
     }
 
+    public Page<TaskSomeone> findAllSubTasksPaginated(Pageable pageable, Long id) {
+        return taskSomeoneRepository.findAllByParentTask_IdOrderByEndDateAsc(pageable, id);
+    }
+
     public TaskSomeone addTaskSomeone(TaskSomeone taskSomeone){
         taskSomeone.setCreatedOn(new Date());
         taskSomeone.setState(TaskState.APPLICATIONS_OPEN);
@@ -103,8 +112,11 @@ public class TaskSomeoneService {
     		original = getTaskSomeone(taskSomeone.getId());
     	}
 
+    	List<TaskSomeone> subtasks = original.getSubTasksList();
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(taskSomeone, original);
+
+        original.setSubTasksList(subtasks);
         return taskSomeoneRepository.save(original);
     }
 
@@ -143,7 +155,7 @@ public class TaskSomeoneService {
     }
 
     public TaskSomeone changeTaskToNextState(TaskSomeone taskSomeone) throws Exception {
-        TaskState nextState = getNextTaskState(taskSomeone.getState());
+        TaskState nextState = stateService.getNextTaskState(taskSomeone);
         if(nextState != null) {
             stateService.validateTaskStateChange(taskSomeone, nextState);
             taskSomeone.setState(nextState);
@@ -154,7 +166,7 @@ public class TaskSomeoneService {
     }
 
     public TaskSomeone changeTaskToPreviousState(TaskSomeone taskSomeone) throws Exception {
-        TaskState previousState = getPreviousTaskState(taskSomeone.getState());
+        TaskState previousState = stateService.getPreviousTaskState(taskSomeone);
         if(previousState != null) {
             stateService.validateTaskStateChange(taskSomeone, previousState);
             taskSomeone.setState(previousState);
@@ -170,45 +182,55 @@ public class TaskSomeoneService {
         return taskSomeone;
     }
 
-    public Integer getNextTaskState(int stateCode) {
-        TaskState nextTaskState = getNextTaskState(TaskState.toEnum(stateCode));
-        if(nextTaskState != null) {
-            return nextTaskState.getCode();
+    public void generateOrDeleteSubTasks(TaskSomeone taskSomeone) {
+        if(!taskSomeone.getSubTasksList().isEmpty()){
+            removeNecessaryOldOrFutureSubTasksForTask(taskSomeone);
         }
-        return null;
+        generateSubTasksForTask(taskSomeone);
+    }
+    private void generateSubTasksForTask(TaskSomeone taskSomeone) {
+        Date taskDate = taskSomeone.getStartDate();
+        List<Date> existingSubTasksDate = taskSomeone.getSubTasksList().stream()
+                                                                        .map(TaskSomeone::getEndDate)
+                                                                        .collect(Collectors.toList());
+        while(taskDate.before(taskSomeone.getEndDate())) {
+            //if there is already a subtask of this task in this date, we don't create.
+            if(existingSubTasksDate.contains(taskDate)){
+                continue;
+            }
+            TaskSomeone subTask = new TaskSomeone();
+            subTask.setEndDate(taskDate);
+            subTask.setDescription(taskSomeone.getDescription());
+            subTask.setCreatedOn(new Date());
+            subTask.setTitle(taskSomeone.getTitle());
+            subTask.setLocation(taskSomeone.getLocation());
+            subTask.setUser(taskSomeone.getUser());
+//            subTask.setMediaList();
+            subTask.setState(TaskState.CREATED);
+            subTask.setParentTask(taskSomeone);
+            taskSomeone.getSubTasksList().add(subTask);
+
+            taskDate = DateUtils.nextDateAccordingToFrequency(taskDate, taskSomeone.getFrequency()) ;
+        }
     }
 
-    public TaskState getNextTaskState(TaskState state) {
-        if (state == TaskState.CREATED) {
-            return TaskState.APPLICATIONS_OPEN;
-        } else if (state == TaskState.APPLICATIONS_OPEN) {
-            return  TaskState.APPLICATIONS_CLOSED;
-        } else if (state == TaskState.APPLICATIONS_CLOSED) {
-            return  TaskState.STARTED;
-        } else if (state == TaskState.STARTED) {
-            return  TaskState.DONE;
+    private void removeNecessaryOldOrFutureSubTasksForTask(TaskSomeone taskSomeone) {
+        List<TaskSomeone> toBeRemovedTasks = new ArrayList<>();
+
+        for(TaskSomeone subtask : taskSomeone.getSubTasksList()){
+            boolean beforeStartDateTask = subtask.getEndDate().before(taskSomeone.getStartDate());
+            boolean beforeTodayTask = subtask.getEndDate().before(new Date());
+            //if the subtask was before the parent task start date or before today, and its on the DONE state,
+            // we DONT remove, because it means that the task was touched, and maybe there is important
+            //information there. But the user can delete if those old subtasks if he wants to
+            if( (beforeStartDateTask || beforeTodayTask) && subtask.getState().equals(TaskState.DONE) ) {
+                continue;
+            }
+            subtask.setParentTask(null);
+            toBeRemovedTasks.add(subtask);
         }
-        return null;
+        taskSomeone.getSubTasksList().removeAll(toBeRemovedTasks);
     }
 
-    public Integer getPreviousTaskState(int stateCode) {
-        TaskState previousState = getPreviousTaskState(TaskState.toEnum(stateCode));
-        if(previousState != null) {
-            return previousState.getCode();
-        }
-        return null;
-    }
 
-    public TaskState getPreviousTaskState(TaskState state) {
-        if (state == TaskState.APPLICATIONS_OPEN) {
-            return TaskState.CREATED;
-        } else if (state == TaskState.APPLICATIONS_CLOSED) {
-            return TaskState.APPLICATIONS_OPEN;
-        } else if (state == TaskState.STARTED) {
-            return TaskState.APPLICATIONS_CLOSED;
-        } else if (state == TaskState.DONE) {
-            return TaskState.STARTED;
-        }
-        return null;
-    }
 }

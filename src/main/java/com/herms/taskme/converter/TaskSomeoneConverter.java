@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 
 import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.enums.TaskState;
+import com.herms.taskme.service.StateService;
 import com.herms.taskme.service.TaskSomeoneService;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.herms.taskme.dto.TaskApplicationForListDTO;
@@ -38,6 +40,8 @@ public class TaskSomeoneConverter {
 	private TaskApplicationConverter taskApplicationConverter;
 	@Autowired
 	private TaskSomeoneService taskSomeoneService;
+	@Autowired
+	private StateService stateService;
 
 	private ModelMapper modelMapper;
 
@@ -108,10 +112,10 @@ public class TaskSomeoneConverter {
 																		? context.getSource().getState().getCode()
 																		: null);
 			context.getDestination().setNextState(!Objects.isNull(context.getSource().getState())
-					? taskSomeoneService.getNextTaskState(context.getSource().getState().getCode())
+					? stateService.getNextTaskStateCode(context.getSource())
 					: null);
 			context.getDestination().setPreviousState(!Objects.isNull(context.getSource().getState())
-					? taskSomeoneService.getPreviousTaskState(context.getSource().getState().getCode())
+					? stateService.getPreviousTaskStateCode(context.getSource())
 					: null);
 			context.getDestination().setMediaList(context.getSource().getMediaList());
 			User principal = customUserDetailsService.getLoggedUser();
@@ -124,6 +128,16 @@ public class TaskSomeoneConverter {
 			context.getDestination().setAlreadyApplied(alreadyApplied);
 			List<User> participants = userRepository.findAllUsersParticipatingInTask(context.getSource().getId());
 			context.getDestination().setParticipants(participants.stream().map(p -> new UserDTO(p)).collect(Collectors.toList()));
+
+			context.getDestination().setIsSubTask(context.getSource().isSubTask());
+
+			if(!context.getDestination().getIsSubTask()){
+				List<TaskSomeone> subTasks = taskSomeoneService.findAllSubTasksPaginated(new PageRequest(0, 5),
+																			context.getSource().getId()).getContent();
+				context.getDestination().setSubTasks(subTasks.stream()
+														.map(st -> toDTO(st, TaskSomeoneDetailsDTO.class))
+														.collect(Collectors.toList()));
+			}
 			return context.getDestination();
 		}
 	};

@@ -194,7 +194,7 @@ public class TaskSomeoneController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/currentTasks")
-    public ResponseEntity<Page<TaskSomeone>> getCreatedTasksPaginated(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+    public ResponseEntity<Page<TaskSomeone>> getCurrentTasksPaginated(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
                                                                       @RequestParam(value = "linesPerPage", defaultValue = "20") Integer linesPerPage,
                                                                       @RequestParam(value = "orderBy", defaultValue = "id") String orderBy,
                                                                       @RequestParam(value = "direction", defaultValue = "DESC") String direction,

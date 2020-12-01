@@ -58,6 +58,10 @@ public class TaskSomeone implements Serializable{
     @Column(name = "STATE", nullable = true)
     private TaskState state;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_TASK", referencedColumnName = "ID")
+    private TaskSomeone parentTask;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "TASK_PARTICIPANT",
@@ -65,10 +69,14 @@ public class TaskSomeone implements Serializable{
             inverseJoinColumns = { @JoinColumn(name = "T_USER", referencedColumnName = "ID") }
     )
     private List<User> participants;
-    
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskSomeone> subTasksList;
+
     public TaskSomeone(){
         mediaList = new ArrayList<>();
         participants = new ArrayList<>();
+        subTasksList = new ArrayList<>();
     }
 
     public Long getId() {
@@ -167,6 +175,29 @@ public class TaskSomeone implements Serializable{
         this.state = state;
     }
 
+    public boolean isPeriodic(){
+        return frequency != null;
+    }
+
+    public TaskSomeone getParentTask() {
+        return parentTask;
+    }
+
+    public void setParentTask(TaskSomeone parentTask) {
+        this.parentTask = parentTask;
+    }
+
+    public List<TaskSomeone> getSubTasksList() {
+        return subTasksList;
+    }
+
+    public void setSubTasksList(List<TaskSomeone> subTasksList) {
+        this.subTasksList = subTasksList;
+    }
+
+    public boolean isSubTask(){
+        return parentTask != null;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
