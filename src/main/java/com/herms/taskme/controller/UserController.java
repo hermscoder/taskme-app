@@ -3,6 +3,7 @@ package com.herms.taskme.controller;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.herms.taskme.dto.MediaForCreationDTO;
+import com.herms.taskme.exception.UsernameAlreadyExistException;
 import com.herms.taskme.model.CloudinaryManager;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.User;
@@ -63,7 +64,7 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/users")
-    public ResponseEntity<User> addUser(@RequestBody User user){
+    public ResponseEntity<User> addUser(@RequestBody User user) throws UsernameAlreadyExistException {
         User addedUser = userService.addUser(user);
 
         return new ResponseEntity<>(addedUser, HttpStatus.OK);
@@ -75,8 +76,12 @@ public class UserController {
         if(id != null && !id.equals(principal.getId())){
             throw new Exception("You don't have access to this function");
         }
+        String username = principal.getUsername();
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(userDTO, principal);
+        //the username can't be updated
+        principal.setUsername(username);
         userService.updateUser(id, principal);
     }
 
@@ -86,7 +91,7 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/users/passwordChange")
-    public void passwordChange(@RequestBody UserPassChange userPassChange) throws ServletException {
+    public void passwordChange(@RequestBody UserPassChange userPassChange) throws ServletException, UsernameAlreadyExistException {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

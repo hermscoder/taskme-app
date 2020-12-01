@@ -1,5 +1,7 @@
 package com.herms.taskme.service;
 
+import com.herms.taskme.enums.ActionEnum;
+import com.herms.taskme.exception.UsernameAlreadyExistException;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.User;
 import com.herms.taskme.repository.MediaRepository;
@@ -36,26 +38,36 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public User addUser(User user){
-
-        user = userRepository.save(user);
-        if(user.getProfilePhoto() == null){
-            Media profilePhoto = new Media();
-            profilePhoto.setDescription("Profile picture");
-            profilePhoto.setType(Media.MEDIA_TYPE_IMG);
-            //we are not using this because it's necessary to include the param with the default_img_url
-            // all the time, because we are always creat-dropping the db.
-            //when we are done with the db, we can change it to the param finding
-//            profilePhoto.setUrl(paramRepository.findByCode("DEFAULT_IMG_URL").getValue());
-            profilePhoto.setUrl(ParamRepository.DEFAULT_PROFILE_IMG_URL);
-            user.setProfilePhoto(profilePhoto);
+    public User addUser(User user) throws UsernameAlreadyExistException {
+        if(validateAndThrows(user, ActionEnum.CREATING)){
+            user = userRepository.save(user);
+            if(user.getProfilePhoto() == null){
+                Media profilePhoto = new Media();
+                profilePhoto.setDescription("Profile picture");
+                profilePhoto.setType(Media.MEDIA_TYPE_IMG);
+                profilePhoto.setUrl(ParamRepository.DEFAULT_PROFILE_IMG_URL);
+                user.setProfilePhoto(profilePhoto);
+            }
+            user.setCreatedOn(new Date());
+            return userRepository.save(user);
         }
-        user.setCreatedOn(new Date());
-        return userRepository.save(user);
+        return null;
     }
 
-    public void updateUser(Long id, User user) {
-        userRepository.save(user);
+    public boolean validateAndThrows(User user, ActionEnum action) throws UsernameAlreadyExistException {
+        User repoUser = findByUsername(user.getUsername());
+
+        if (repoUser != null && action.equals(ActionEnum.CREATING)) {
+            throw  new UsernameAlreadyExistException("Username already been used.", "username");
+        }
+
+        return true;
+    }
+
+    public void updateUser(Long id, User user) throws UsernameAlreadyExistException {
+        if(validateAndThrows(user, ActionEnum.UPDATING)){
+            userRepository.save(user);
+        }
     }
 
     public void deleteUser(Long id){

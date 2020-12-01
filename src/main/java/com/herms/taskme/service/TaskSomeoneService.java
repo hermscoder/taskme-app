@@ -88,7 +88,7 @@ public class TaskSomeoneService {
 
     public TaskSomeone addTaskSomeone(TaskSomeone taskSomeone){
         taskSomeone.setCreatedOn(new Date());
-        taskSomeone.setState(TaskState.CREATED);
+        taskSomeone.setState(TaskState.APPLICATIONS_OPEN);
         taskSomeone.setUser(customUserDetailsService.getLoggedUser());
         return taskSomeoneRepository.save(taskSomeone);
     }

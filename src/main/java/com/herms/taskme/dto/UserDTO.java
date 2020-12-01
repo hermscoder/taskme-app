@@ -15,6 +15,8 @@ public class UserDTO extends DataTransferObject  {
 
     private Long id;
 
+    private String username;
+
     private String givenName;
 
     private String familyName;
@@ -37,6 +39,7 @@ public class UserDTO extends DataTransferObject  {
 
     public UserDTO(User user) {
         this.id = user.getId();
+        this.username = user.getUsername();
         this.givenName = user.getGivenName();
         this.familyName = user.getFamilyName();
         this.contact = user.getContact();
@@ -55,6 +58,14 @@ public class UserDTO extends DataTransferObject  {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getGivenName() {
