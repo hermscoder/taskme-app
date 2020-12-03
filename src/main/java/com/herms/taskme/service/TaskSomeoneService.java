@@ -53,7 +53,7 @@ public class TaskSomeoneService {
     }
     
     public Page<TaskSomeone> getAllTaskSomeonePaginated(Pageable pageable, String searchTerm){
-        return taskSomeoneRepository.findByTitleContainingIgnoreCaseAndStateOrderByCreatedOnDesc(pageable, searchTerm, TaskState.APPLICATIONS_OPEN);
+        return taskSomeoneRepository.findByTitleContainingIgnoreCaseAndStateAndParentTaskIsNullOrderByCreatedOnDesc(pageable, searchTerm, TaskState.APPLICATIONS_OPEN);
     }
 
     public TaskSomeone getTaskSomeone(Long id){
@@ -61,7 +61,7 @@ public class TaskSomeoneService {
     }
 
     public Page<TaskSomeone> getAllTaskSomeoneCreatedByUserIdPaginated(Pageable pageable, Long userId, String term){
-        return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
+        return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseAndParentTaskIsNullOrderByCreatedOnDesc(pageable, userId, term);
     }
 
     public Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, Boolean periodicTasks, Date createdOn, Integer numberOfDaysToLookUp) {
@@ -88,7 +88,7 @@ public class TaskSomeoneService {
     }
 
     private Page<TaskSomeone> getAllUserTaskApplicationsPaginated(Pageable pageable, Long userId, String term){
-        return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseOrderByCreatedOnDesc(pageable, userId, term);
+        return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseAndParentTaskIsNullOrderByCreatedOnDesc(pageable, userId, term);
     }
 
     public Page<TaskSomeone> findAllSubTasksPaginated(Pageable pageable, Long id) {
@@ -113,10 +113,12 @@ public class TaskSomeoneService {
     	}
 
     	List<TaskSomeone> subtasks = original.getSubTasksList();
+    	TaskSomeone parent = original.getParentTask();
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(taskSomeone, original);
 
         original.setSubTasksList(subtasks);
+        original.setParentTask(parent);
         return taskSomeoneRepository.save(original);
     }
 

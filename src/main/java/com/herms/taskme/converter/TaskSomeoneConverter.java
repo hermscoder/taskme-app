@@ -132,7 +132,7 @@ public class TaskSomeoneConverter {
 			context.getDestination().setIsSubTask(context.getSource().isSubTask());
 
 			if(!context.getDestination().getIsSubTask()){
-				List<TaskSomeone> subTasks = taskSomeoneService.findAllSubTasksPaginated(new PageRequest(0, 5),
+				List<TaskSomeone> subTasks = taskSomeoneService.findAllSubTasksPaginated(new PageRequest(0, 1000),
 																			context.getSource().getId()).getContent();
 				context.getDestination().setSubTasks(subTasks.stream()
 														.map(st -> toDTO(st, TaskSomeoneDetailsDTO.class))
