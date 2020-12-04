@@ -65,11 +65,11 @@ public class TaskSomeoneService {
     }
 
     public Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, Boolean periodicTasks, Date createdOn, Integer numberOfDaysToLookUp) {
-        List<String> frequencies = null;
+        List<FrequencyEnum> frequencyEnumList = null;
         if(periodicTasks){
-            frequencies = Arrays.asList(FrequencyEnum.values()).stream().map(FrequencyEnum::getCode).collect(Collectors.toList());
+            frequencyEnumList = Arrays.asList(FrequencyEnum.values());
         }
-        return getAllTasksThatUserIsParticipatingPaginated(pageable, userId, term, Arrays.asList(FrequencyEnum.values()), createdOn, numberOfDaysToLookUp);
+        return getAllTasksThatUserIsParticipatingPaginated(pageable, userId, term, frequencyEnumList, createdOn, numberOfDaysToLookUp);
     }
     private Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, List<FrequencyEnum> frequencies, Date createdOn, Integer dateOffset){
         Date createdOnEnd = null;

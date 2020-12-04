@@ -194,7 +194,7 @@ public class TaskSomeoneController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone/currentTasks")
-    public ResponseEntity<Page<TaskSomeone>> getCurrentTasksPaginated(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+    public ResponseEntity<Page<TaskSomeoneForListDTO>> getCurrentTasksPaginated(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
                                                                       @RequestParam(value = "linesPerPage", defaultValue = "20") Integer linesPerPage,
                                                                       @RequestParam(value = "orderBy", defaultValue = "id") String orderBy,
                                                                       @RequestParam(value = "direction", defaultValue = "DESC") String direction,
@@ -212,7 +212,8 @@ public class TaskSomeoneController {
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTasksThatUserIsParticipatingPaginated(pageRequest, principal.getId(), searchTerm, periodicTasks, createdOn, dateOffset);
 
-        return new ResponseEntity<>(taskSomeoneCreatedBy, HttpStatus.OK);
+        Page<TaskSomeoneForListDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map(TaskSomeoneForListDTO::new);
+        return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
 
     }
 }
