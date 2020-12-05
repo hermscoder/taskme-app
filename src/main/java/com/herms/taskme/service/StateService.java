@@ -45,8 +45,11 @@ public class StateService {
                 taskSomeone.setParticipants(approvedApplications.stream()
                         .map(TaskApplication::getUser)
                         .collect(Collectors.toList()));
-            } else if (TaskState.STARTED.equals(newState) && taskSomeone.isPeriodic()){
-                taskSomeoneService.generateOrDeleteSubTasks(taskSomeone);
+            } else if (TaskState.STARTED.equals(newState)){
+                if(taskSomeone.isPeriodic()){
+                    taskSomeoneService.generateOrDeleteSubTasks(taskSomeone);
+                }
+                //TODO currentTaskssend message to all the participants saying that the task has began
             }
         }
     }

@@ -64,27 +64,8 @@ public class TaskSomeoneService {
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseAndParentTaskIsNullOrderByCreatedOnDesc(pageable, userId, term);
     }
 
-    public Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, Boolean periodicTasks, Date createdOn, Integer numberOfDaysToLookUp) {
-        List<FrequencyEnum> frequencyEnumList = null;
-        if(periodicTasks){
-            frequencyEnumList = Arrays.asList(FrequencyEnum.values());
-        }
-        return getAllTasksThatUserIsParticipatingPaginated(pageable, userId, term, frequencyEnumList, createdOn, numberOfDaysToLookUp);
-    }
-    private Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, List<FrequencyEnum> frequencies, Date createdOn, Integer dateOffset){
-        Date createdOnEnd = null;
-        if(createdOn != null) {
-            createdOnEnd = createdOn;
-
-            Calendar c = Calendar.getInstance();
-            c.setTime(createdOnEnd);
-            c.add(Calendar.DATE, dateOffset);
-            createdOnEnd = c.getTime();
-
-            return taskSomeoneRepository.findAllTasksThatUserIsParticipatingInAPeriodPaginated(pageable, userId, term, frequencies, createdOn, createdOnEnd);
-        }
-
-        return taskSomeoneRepository.findAllTasksThatUserIsParticipatingPaginated(pageable, userId, term, frequencies);
+    public Page<TaskSomeone> getAllTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term) {
+        return taskSomeoneRepository.findAllTasksThatUserIsParticipatingPaginated(pageable, userId, term);
     }
 
     private Page<TaskSomeone> getAllUserTaskApplicationsPaginated(Pageable pageable, Long userId, String term){
@@ -93,6 +74,10 @@ public class TaskSomeoneService {
 
     public Page<TaskSomeone> findAllSubTasksPaginated(Pageable pageable, Long id) {
         return taskSomeoneRepository.findAllByParentTask_IdOrderByEndDateAsc(pageable, id);
+    }
+
+    public Page<TaskSomeone> getAllSubTasksThatUserIsParticipatingPaginated(Pageable pageable, Long userId, String term, Date fromDate, Date toDate){
+        return taskSomeoneRepository.findAllSubTasksThatUserIsParticipatingInAPeriodPaginated(pageable, userId, term, fromDate, toDate);
     }
 
     public TaskSomeone addTaskSomeone(TaskSomeone taskSomeone){

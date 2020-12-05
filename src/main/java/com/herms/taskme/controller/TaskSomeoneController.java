@@ -199,10 +199,9 @@ public class TaskSomeoneController {
                                                                       @RequestParam(value = "orderBy", defaultValue = "id") String orderBy,
                                                                       @RequestParam(value = "direction", defaultValue = "DESC") String direction,
                                                                       @RequestParam(value = "searchTerm", defaultValue = "") String searchTerm,
-                                                                      @RequestParam(value = "status", defaultValue = "", required = false) String status,
                                                                       @RequestParam(value = "periodicTasks", defaultValue = "false", required = false) Boolean periodicTasks,
-                                                                      @RequestParam(value = "createdOn", required = false)@DateTimeFormat(pattern="ddMMyyyy") Date createdOn,
-                                                                      @RequestParam(value = "dateOffset", defaultValue = "0", required = false) Integer dateOffset) throws Exception {
+                                                                      @RequestParam(value = "fromDate", required = false)@DateTimeFormat(pattern="yyyy-MM-dd") Date fromDate,
+                                                                      @RequestParam(value = "toDate", required = false)@DateTimeFormat(pattern="yyyy-MM-dd") Date toDate) throws Exception {
 
         User principal = customUserDetailsService.getLoggedUser();
         if (principal == null) {
@@ -210,7 +209,12 @@ public class TaskSomeoneController {
         }
 
         PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        Page<TaskSomeone> taskSomeoneCreatedBy = taskSomeoneService.getAllTasksThatUserIsParticipatingPaginated(pageRequest, principal.getId(), searchTerm, periodicTasks, createdOn, dateOffset);
+        Page<TaskSomeone> taskSomeoneCreatedBy;
+        if(periodicTasks) {
+            taskSomeoneCreatedBy = taskSomeoneService.getAllSubTasksThatUserIsParticipatingPaginated(pageRequest, principal.getId(), searchTerm, fromDate, toDate);
+        } else {
+            taskSomeoneCreatedBy = taskSomeoneService.getAllTasksThatUserIsParticipatingPaginated(pageRequest, principal.getId(), searchTerm);
+        }
 
         Page<TaskSomeoneForListDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map(TaskSomeoneForListDTO::new);
         return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
