@@ -33,6 +33,8 @@ public class UserDTO extends DataTransferObject  {
 
     private Integer age;
 
+    private Integer numberOfTasksCreated;
+
     public UserDTO() {
 
     }
@@ -130,6 +132,14 @@ public class UserDTO extends DataTransferObject  {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Integer getNumberOfTasksCreated() {
+        return numberOfTasksCreated;
+    }
+
+    public void setNumberOfTasksCreated(Integer numberOfTasksCreated) {
+        this.numberOfTasksCreated = numberOfTasksCreated;
     }
 
     @Override

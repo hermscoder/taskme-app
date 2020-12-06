@@ -60,6 +60,10 @@ public class TaskSomeoneService {
         return taskSomeoneRepository.findById(id).get();
     }
 
+    public Long getNumberOfTasksCreatedByUserId(Long userId) {
+        return taskSomeoneRepository.findNumberOfTasksCreatedByuser(userId);
+    }
+
     public Page<TaskSomeone> getAllTaskSomeoneCreatedByUserIdPaginated(Pageable pageable, Long userId, String term){
         return taskSomeoneRepository.findAllByUser_IdAndTitleContainingIgnoreCaseAndParentTaskIsNullOrderByCreatedOnDesc(pageable, userId, term);
     }
@@ -183,6 +187,7 @@ public class TaskSomeoneService {
         while(taskDate.before(taskSomeone.getEndDate())) {
             //if there is already a subtask of this task in this date, we don't create.
             if(existingSubTasksDate.contains(taskDate)){
+                taskDate = DateUtils.nextDateAccordingToFrequency(taskDate, taskSomeone.getFrequency());
                 continue;
             }
             TaskSomeone subTask = new TaskSomeone();
@@ -196,7 +201,7 @@ public class TaskSomeoneService {
             subTask.setState(TaskState.CREATED);
             subTask.setParentTask(taskSomeone);
             taskSomeone.getSubTasksList().add(subTask);
-
+            System.out.println("Generating subtask: " + subTask.getEndDate());
             taskDate = DateUtils.nextDateAccordingToFrequency(taskDate, taskSomeone.getFrequency()) ;
         }
     }

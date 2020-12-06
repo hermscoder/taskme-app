@@ -46,4 +46,7 @@ public interface TaskSomeoneRepository extends CrudRepository<TaskSomeone, Long>
                                             "and ts.frequency IS NULL " +
                                             "order by ts.createdOn")
     public Page<TaskSomeone> findAllTasksThatUserIsParticipatingPaginated(Pageable pageable, @Param("userId") Long userId, @Param("term") String term);
+
+    @Query("SELECT COUNT(ts) FROM TaskSomeone ts WHERE ts.user.id=?1 and ts.parentTask is null")
+    public Long findNumberOfTasksCreatedByuser(Long userId);
 }

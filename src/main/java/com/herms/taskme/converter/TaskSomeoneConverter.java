@@ -102,7 +102,9 @@ public class TaskSomeoneConverter {
 			context.getDestination().setDescription(context.getSource().getDescription());
 			context.getDestination().setLocation(context.getSource().getLocation());
 			context.getDestination().setTitle(context.getSource().getTitle());
-			context.getDestination().setUser(new UserDTO(context.getSource().getUser()));
+			UserDTO userDTO = new UserDTO(context.getSource().getUser());
+			userDTO.setNumberOfTasksCreated(taskSomeoneService.getNumberOfTasksCreatedByUserId(userDTO.getId()).intValue());
+			context.getDestination().setUser(userDTO);
 			context.getDestination().setFrequency(!Objects.isNull(context.getSource().getFrequency())
 							? context.getSource().getFrequency().getCode()
 							: null);
