@@ -239,4 +239,15 @@ public class TaskSomeoneService {
             messageService.sendMessageTo(participant.getId(), message);
         }
     }
+
+    public void validateTaskConclusion(TaskSomeone taskSomeone) throws Exception {
+        if(taskSomeone.isPeriodic()) {
+            List<TaskSomeone> notDoneSubTask = taskSomeone.getSubTasksList().stream()
+                    .filter(st -> st.getState().equals(TaskState.CREATED))
+                    .collect(Collectors.toList());
+            if(!notDoneSubTask.isEmpty()) {
+                throw new Exception("There is unfinished subtasks! In order to conclude this task, all the subtasks must be DONE or CANCELLED");
+            }
+        }
+    }
 }

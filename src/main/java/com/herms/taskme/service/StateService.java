@@ -35,7 +35,7 @@ public class StateService {
         }
     }
 
-    public void executeAfterStateSetProcedures(TaskSomeone taskSomeone, TaskState newState) {
+    public void executeAfterStateSetProcedures(TaskSomeone taskSomeone, TaskState newState) throws Exception {
         //if it's a parent task
         if(!taskSomeone.isSubTask()){
             if(TaskState.APPLICATIONS_OPEN.equals(newState)){
@@ -48,8 +48,10 @@ public class StateService {
             } else if (TaskState.STARTED.equals(newState)){
                 if(taskSomeone.isPeriodic()){
                     taskSomeoneService.generateOrDeleteSubTasks(taskSomeone);
-                }
+                }   
                 taskSomeoneService.notifyPartificpantsThatTaskStarted(taskSomeone);
+            } else if (TaskState.DONE.equals(newState)){
+                taskSomeoneService.validateTaskConclusion(taskSomeone);
             }
         }
     }
