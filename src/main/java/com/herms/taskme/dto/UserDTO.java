@@ -4,10 +4,8 @@ import com.herms.taskme.model.Media;
 import com.herms.taskme.model.User;
 import com.herms.taskme.util.Converter;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -35,6 +33,8 @@ public class UserDTO extends DataTransferObject  {
 
     private Integer numberOfTasksCreated;
 
+    private Double rateAvg;
+
     public UserDTO() {
 
     }
@@ -49,6 +49,7 @@ public class UserDTO extends DataTransferObject  {
         this.createdOn = user.getCreatedOn();
         this.birthDate = user.getBirthDate();
         this.profilePhoto = user.getProfilePhoto();
+        this.rateAvg = user.getRateAvg();
 
         Period diff = Period.between(Converter.convertToLocalDateViaSqlDate(user.getBirthDate()), LocalDate.now());
         this.age = diff.getYears();
@@ -140,6 +141,14 @@ public class UserDTO extends DataTransferObject  {
 
     public void setNumberOfTasksCreated(Integer numberOfTasksCreated) {
         this.numberOfTasksCreated = numberOfTasksCreated;
+    }
+
+    public Double getRateAvg() {
+        return rateAvg;
+    }
+
+    public void setRateAvg(Double rateAvg) {
+        this.rateAvg = rateAvg;
     }
 
     @Override

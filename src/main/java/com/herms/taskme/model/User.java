@@ -1,6 +1,6 @@
 package com.herms.taskme.model;
 
-import org.springframework.security.access.annotation.Secured;
+import com.herms.taskme.util.Converter;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -52,6 +52,10 @@ public class User implements Serializable {
     @Column(name = "CREATED")
     @Temporal(TemporalType.DATE)
     private Date createdOn;
+    @Column(name = "RATE_SUM")
+    private Integer rateSum = 0;
+    @Column(name = "NUM_RATES")
+    private Integer numberOfRates = 0;
 
 //    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
 //    private List<TaskSomeone> taskSomeoneList = new ArrayList<>();
@@ -61,7 +65,8 @@ public class User implements Serializable {
 
 
     public User(){
-
+        this.rateSum = 0;
+        this.numberOfRates = 0;
     }
     
     //constructor for lazy fetched relations
@@ -77,6 +82,13 @@ public class User implements Serializable {
         this.address = address;
         this.username = username;
         this.password = password;
+    }
+
+    public Double getRateAvg(){
+        this.rateSum = this.rateSum == null ? 0 : this.rateSum;
+        this.numberOfRates = (this.numberOfRates == null || this.numberOfRates == 0) ? 1 : this.numberOfRates;
+
+        return Double.valueOf(this.rateSum)/Double.valueOf(this.numberOfRates);
     }
 
     public Long getId() {
@@ -165,21 +177,28 @@ public class User implements Serializable {
         this.createdOn = createdOn;
     }
 
-    //    @XmlTransient
-//    public List<TaskSomeone> getTaskSomeoneList() {
-//        return taskSomeoneList;
-//    }
-//
-//    public void setTaskSomeoneList(List<TaskSomeone> taskSomeoneList) {
-//        this.taskSomeoneList = taskSomeoneList;
-//    }
-//
     public List<Worksheet> getWorksheetList() {
         return worksheetList;
     }
 
     public void setWorksheetList(List<Worksheet> worksheetList) {
         this.worksheetList = worksheetList;
+    }
+
+    public Integer getRateSum() {
+        return rateSum;
+    }
+
+    public void setRateSum(Integer rateSum) {
+        this.rateSum = rateSum;
+    }
+
+    public Integer getNumberOfRates() {
+        return numberOfRates;
+    }
+
+    public void setNumberOfRates(Integer numberOfRates) {
+        this.numberOfRates = numberOfRates;
     }
 
     @Override

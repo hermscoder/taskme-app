@@ -1,12 +1,14 @@
 package com.herms.taskme.service;
 
 import com.herms.taskme.dto.MediaForCreationDTO;
+import com.herms.taskme.dto.MessageDTO;
 import com.herms.taskme.enums.ApplicationStatus;
 import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.enums.TaskState;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.TaskApplication;
 import com.herms.taskme.model.TaskSomeone;
+import com.herms.taskme.model.User;
 import com.herms.taskme.repository.TaskSomeoneRepository;
 import com.herms.taskme.util.DateUtils;
 import org.modelmapper.ModelMapper;
@@ -36,6 +38,8 @@ public class TaskSomeoneService {
     private TaskApplicationService taskApplicationService;
     @Autowired
     private StateService stateService;
+    @Autowired
+    private MessageService messageService;
 
     public TaskSomeoneService() {
     }
@@ -225,4 +229,14 @@ public class TaskSomeoneService {
     }
 
 
+    public void notifyPartificpantsThatTaskStarted(TaskSomeone taskSomeone) {
+        MessageDTO message = new MessageDTO();
+        message.setUserSenderId(taskSomeone.getUser().getId());
+        message.setSentTime(new Date());
+        for(User participant : taskSomeone.getParticipants()) {
+            message.setContent(String.format("Hello %s! I'd like to inform you that the task '%s' has started.",
+                    participant.getGivenName(), taskSomeone.getTitle()));
+            messageService.sendMessageTo(participant.getId(), message);
+        }
+    }
 }

@@ -49,7 +49,7 @@ public class StateService {
                 if(taskSomeone.isPeriodic()){
                     taskSomeoneService.generateOrDeleteSubTasks(taskSomeone);
                 }
-                //TODO currentTaskssend message to all the participants saying that the task has began
+                taskSomeoneService.notifyPartificpantsThatTaskStarted(taskSomeone);
             }
         }
     }

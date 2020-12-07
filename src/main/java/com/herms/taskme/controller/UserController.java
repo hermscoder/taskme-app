@@ -85,6 +85,12 @@ public class UserController {
         userService.updateUser(id, principal);
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/users/{userIdToRate}/rate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> rateUser(@PathVariable Long userIdToRate,
+                           @RequestParam(value = "rate", required = true) Integer rate) throws Exception{
+        return new ResponseEntity<>(new UserDTO(userService.rateUser(userIdToRate, rate)), HttpStatus.OK);
+    }
+
     @RequestMapping(method = RequestMethod.DELETE, value = "/users/{id}")
     public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);

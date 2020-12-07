@@ -73,6 +73,9 @@ public class TaskSomeone implements Serializable{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskSomeone> subTasksList;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "taskSomeone", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList;
+
     public TaskSomeone(){
         mediaList = new ArrayList<>();
         participants = new ArrayList<>();
@@ -198,6 +201,15 @@ public class TaskSomeone implements Serializable{
     public boolean isSubTask(){
         return parentTask != null;
     }
+
+    public List<Comment> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

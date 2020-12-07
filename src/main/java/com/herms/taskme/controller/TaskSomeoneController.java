@@ -1,11 +1,9 @@
 package com.herms.taskme.controller;
 
-import com.herms.taskme.dto.ChangeStateDTO;
-import com.herms.taskme.dto.UserDTO;
+import com.herms.taskme.dto.*;
 import com.herms.taskme.model.*;
 import com.herms.taskme.converter.TaskSomeoneConverter;
-import com.herms.taskme.dto.TaskSomeoneDetailsDTO;
-import com.herms.taskme.dto.TaskSomeoneForListDTO;
+import com.herms.taskme.service.CommentService;
 import com.herms.taskme.service.CustomUserDetailsService;
 import com.herms.taskme.service.TaskSomeoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +31,8 @@ public class TaskSomeoneController {
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private TaskSomeoneConverter taskSomeoneConverter;
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/tasksomeone")
     public List<TaskSomeone> getAllTaskSomeone() {
@@ -219,5 +219,30 @@ public class TaskSomeoneController {
         Page<TaskSomeoneForListDTO> taskSomeoneForListDTOs = taskSomeoneCreatedBy.map(TaskSomeoneForListDTO::new);
         return new ResponseEntity<>(taskSomeoneForListDTOs, HttpStatus.OK);
 
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "tasksomeone/{taskSomeoneId}/comments")
+    public ResponseEntity<Page<CommentDTO>> getAllCommentsFromTask(@PathVariable Long taskSomeoneId,
+                                                          @RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+                                                          @RequestParam(value = "linesPerPage", defaultValue = "4") Integer linesPerPage,
+                                                          @RequestParam(value = "orderBy", defaultValue = "id") String orderBy,
+                                                          @RequestParam(value = "direction", defaultValue = "DESC") String direction){
+        PageRequest pageRequest = PageRequest.of(pageNumber, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        Page<Comment> commentsPage = commentService.getAllCommentsFromTask(pageRequest, taskSomeoneId);
+
+        Page<CommentDTO> commentDTOPage = commentsPage.map(CommentDTO::new);
+
+        return new ResponseEntity<>(commentDTOPage, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "tasksomeone/{taskSomeoneId}/comments")
+    public void addCommentToTask(@PathVariable Long taskSomeoneId, @RequestBody CommentDTO commentDTO) throws Exception {
+        commentDTO.setTaskSomeoneId(taskSomeoneId);
+        commentService.addComment(commentDTO);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "tasksomeone/{taskSomeoneId}/comments/{commentId}")
+    public void deleteComment(@PathVariable Long id) throws Exception {
+        commentService.deleteComment(id);
     }
 }

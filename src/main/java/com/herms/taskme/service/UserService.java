@@ -9,10 +9,8 @@ import com.herms.taskme.repository.ParamRepository;
 import com.herms.taskme.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -80,6 +78,18 @@ public class UserService {
     
     public List<User> findAllTaskApplicantsByTaskSomeone_IdOrderByCreatedOnDesc(Long taskSomeoneId){
     	return userRepository.findAllTaskApplicantsByTaskSomeone_IdOrderByCreatedOnDesc(taskSomeoneId);
+    }
+
+    public User rateUser(Long userIdToRate, Integer rate) {
+        User userToChange = userRepository.findById(userIdToRate).get();
+
+        Integer numOfRates = userToChange.getNumberOfRates() == null ? 0 : userToChange.getNumberOfRates();
+        Integer rateSum = userToChange.getRateSum() == null ? 0 : userToChange.getRateSum();
+
+        userToChange.setRateSum(rateSum + rate);
+        userToChange.setNumberOfRates(numOfRates + 1);
+
+        return userRepository.save(userToChange);
     }
 }
 
