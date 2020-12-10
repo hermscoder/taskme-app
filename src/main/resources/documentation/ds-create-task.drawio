@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-12-10T15:20:01.648Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.57" etag="B64ALzWBFrs6Tm0gn-58" version="14.0.0" type="github">
+<mxfile host="app.diagrams.net" modified="2020-12-10T15:37:49.915Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.57" etag="lWr1g6H1bczWh16I1Cd2" version="14.0.0" type="github">
   <diagram id="kgpKYQtTHZ0yAKxKKP6v" name="Page-1">
     <mxGraphModel dx="1038" dy="580" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -10,11 +10,8 @@
             <mxPoint x="170" y="120" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="3nuBFxr9cyL0pnOWT2aG-5" value="AuthController" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
-          <mxGeometry x="300" y="80" width="100" height="300" as="geometry" />
-        </mxCell>
-        <mxCell id="3nuBFxr9cyL0pnOWT2aG-6" value="" style="points=[];perimeter=orthogonalPerimeter;rounded=0;shadow=0;strokeWidth=1;" parent="3nuBFxr9cyL0pnOWT2aG-5" vertex="1">
-          <mxGeometry x="45" y="80" width="10" height="90" as="geometry" />
+        <mxCell id="3nuBFxr9cyL0pnOWT2aG-5" value="TaskSomeoneController" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=0;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+          <mxGeometry x="290" y="80" width="130" height="300" as="geometry" />
         </mxCell>
         <mxCell id="3nuBFxr9cyL0pnOWT2aG-7" value="TaskSomeoneForListDTO" style="verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=0.95;shadow=0;strokeWidth=1;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -28,7 +25,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="3nuBFxr9cyL0pnOWT2aG-2" value="" style="points=[];perimeter=orthogonalPerimeter;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
-          <mxGeometry x="165" y="150" width="10" height="110" as="geometry" />
+          <mxGeometry x="165" y="150" width="10" height="220" as="geometry" />
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-14" value="" style="group" parent="1" vertex="1" connectable="0">
           <mxGeometry x="155" y="60" width="80" height="60" as="geometry" />
@@ -39,11 +36,11 @@
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-13" value="Usuário" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="8pLvlaZp4V2zGdibH3Zn-14" vertex="1">
           <mxGeometry x="20" y="30" width="60" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="8pLvlaZp4V2zGdibH3Zn-15" value="UserService" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
-          <mxGeometry x="486" y="80" width="100" height="300" as="geometry" />
+        <mxCell id="8pLvlaZp4V2zGdibH3Zn-15" value="TaskSomeoneService" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+          <mxGeometry x="486" y="80" width="118" height="300" as="geometry" />
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-16" value="" style="points=[];perimeter=orthogonalPerimeter;rounded=0;shadow=0;strokeWidth=1;" parent="8pLvlaZp4V2zGdibH3Zn-15" vertex="1">
-          <mxGeometry x="45" y="90" width="10" height="70" as="geometry" />
+          <mxGeometry x="54" y="90" width="10" height="70" as="geometry" />
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.07;entryY=0.008;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="3nuBFxr9cyL0pnOWT2aG-6" target="8pLvlaZp4V2zGdibH3Zn-16" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -54,7 +51,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-18" value="&lt;font style=&quot;font-size: 11px&quot;&gt;addTaskSomeone(TaskSomeone)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" parent="1" vertex="1">
-          <mxGeometry x="352" y="150" width="180" height="20" as="geometry" />
+          <mxGeometry x="355" y="150" width="180" height="20" as="geometry" />
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-25" value="UserRepository" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
           <mxGeometry x="650" y="80" width="100" height="300" as="geometry" />
@@ -64,8 +61,8 @@
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="541" y="182.19047619047615" as="sourcePoint" />
-            <mxPoint x="699.5" y="182.19047619047615" as="targetPoint" />
+            <mxPoint x="549" y="182.19047619047615" as="sourcePoint" />
+            <mxPoint x="696" y="182.19047619047615" as="targetPoint" />
             <Array as="points">
               <mxPoint x="650" y="182" />
               <mxPoint x="650" y="182" />
@@ -77,15 +74,18 @@
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-29" value="TaskSomeone" style="verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;shadow=0;strokeWidth=1;entryX=0.98;entryY=0.239;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="543" y="221.24" as="targetPoint" />
+            <mxPoint x="552" y="221.24" as="targetPoint" />
             <mxPoint x="700" y="221" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="8pLvlaZp4V2zGdibH3Zn-30" value="TaskSomeone" style="verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;shadow=0;strokeWidth=1;entryX=0.98;entryY=0.239;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="355.3500000000001" y="237.24" as="targetPoint" />
-            <mxPoint x="527" y="237" as="sourcePoint" />
+            <mxPoint x="362" y="237.24" as="targetPoint" />
+            <mxPoint x="539" y="237" as="sourcePoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="3nuBFxr9cyL0pnOWT2aG-6" value="" style="points=[];perimeter=orthogonalPerimeter;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+          <mxGeometry x="350" y="160" width="10" height="90" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
