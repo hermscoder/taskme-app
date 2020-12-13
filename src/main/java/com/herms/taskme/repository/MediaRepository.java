@@ -1,8 +1,6 @@
 package com.herms.taskme.repository;
 
 import com.herms.taskme.model.Media;
-import com.herms.taskme.model.Param;
-import com.herms.taskme.model.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -13,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface MediaRepository extends CrudRepository<Media, Long> {
 
     @Query(value = "select m from Media m where m.type = :type")
-    public Param findByType(@org.springframework.data.repository.query.Param("type") String type);
+    public Media findByType(@org.springframework.data.repository.query.Param("type") String type);
 
     @Modifying
     @Transactional

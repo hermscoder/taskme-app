@@ -1,6 +1,7 @@
 package com.herms.taskme.model;
 
 import com.herms.taskme.util.Converter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -56,6 +57,9 @@ public class User implements Serializable {
     private Integer rateSum = 0;
     @Column(name = "NUM_RATES")
     private Integer numberOfRates = 0;
+    @Size(min = 1, max = 1000)
+    @Column(name = "DESCRIPTION", nullable = false)
+    private String description;
 
     public User(){
         this.rateSum = 0;
@@ -184,6 +188,14 @@ public class User implements Serializable {
 
     public void setNumberOfRates(Integer numberOfRates) {
         this.numberOfRates = numberOfRates;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

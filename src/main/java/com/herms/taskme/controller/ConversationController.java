@@ -54,7 +54,6 @@ public class ConversationController {
         					.stream().noneMatch(user -> principal.getId().equals(user.getId()))) {
         	conversationDTO.getParticipants().add(new UserDTO(principal));
         }
-        conversationDTO.setHasUnreadMessages(true);
         Conversation conversation = conversationConverters.fromConversationtDTO(conversationDTO);
         
         conversationDTO = conversationConverters.toConversationtDTO(conversationService.addConversation(conversation));

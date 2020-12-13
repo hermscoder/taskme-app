@@ -27,9 +27,6 @@ public class Conversation implements Serializable{
     @GeneratedValue
     @Column(name = "ID", nullable = false)
     private Long id;
-    @Type(type = "yes_no")
-    @Column(name = "HAS_UNREAD_MSG", nullable = false)
-    private Boolean hasUnreadMessages;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "conversation", cascade = CascadeType.ALL)
     private List<Message> messagesList;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -46,7 +43,6 @@ public class Conversation implements Serializable{
     public Conversation(){
     	messagesList = new ArrayList<>();	
     	userList = new ArrayList<>();
-    	hasUnreadMessages = true;
     }
 
     public static long getSerialVersionUID() {
@@ -77,15 +73,6 @@ public class Conversation implements Serializable{
 		this.userList = userList;
 	}
 
-	
-	public Boolean getHasUnreadMessages() {
-		return hasUnreadMessages;
-	}
-
-	public void setHasUnreadMessages(Boolean hasUnreadMessages) {
-		this.hasUnreadMessages = hasUnreadMessages;
-	}
-
 	public Date getCreatedOn() {
 		return createdOn;
 	}
@@ -98,7 +85,6 @@ public class Conversation implements Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((hasUnreadMessages == null) ? 0 : hasUnreadMessages.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -112,11 +98,6 @@ public class Conversation implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Conversation other = (Conversation) obj;
-		if (hasUnreadMessages == null) {
-			if (other.hasUnreadMessages != null)
-				return false;
-		} else if (!hasUnreadMessages.equals(other.hasUnreadMessages))
-			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;

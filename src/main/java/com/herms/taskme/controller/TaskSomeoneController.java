@@ -70,7 +70,7 @@ public class TaskSomeoneController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone")
     public ResponseEntity<TaskSomeoneForListDTO> addTaskSomeone(@RequestBody TaskSomeone taskSomeone) {
-        return new ResponseEntity<>(new TaskSomeoneForListDTO(taskSomeoneService.addTaskSomeone(taskSomeone)), HttpStatus.OK);
+        return new ResponseEntity<>(convertToDTO(taskSomeoneService.addTaskSomeone(taskSomeone)), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone/{id}")
@@ -118,9 +118,8 @@ public class TaskSomeoneController {
     @RequestMapping(method = RequestMethod.POST, value = "/tasksomeone/{id}/addMedia")
     public ResponseEntity<TaskSomeone> addMediaToTaskSomeone(@RequestParam("file") MultipartFile[] multipartFiles, @PathVariable Long id) throws Exception {
 
-        User principal = customUserDetailsService.getLoggedUser();
         TaskSomeone taskSomeone = taskSomeoneService.getTaskSomeone(id);
-        if (taskSomeone == null || !taskSomeone.getUser().equals(principal)) {
+        if (customUserDetailsService.checkIfUserHasRightToOperation(taskSomeone.getUser())) {
             throw new Exception("You don't have access to this function");
         }
 
@@ -244,5 +243,9 @@ public class TaskSomeoneController {
     @RequestMapping(method = RequestMethod.DELETE, value = "tasksomeone/{taskSomeoneId}/comments/{commentId}")
     public void deleteComment(@PathVariable Long id) throws Exception {
         commentService.deleteComment(id);
+    }
+
+    private TaskSomeoneForListDTO convertToDTO(TaskSomeone taskSomeone){
+        return new TaskSomeoneForListDTO(taskSomeone);
     }
 }

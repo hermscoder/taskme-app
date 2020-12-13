@@ -5,7 +5,6 @@ import com.herms.taskme.exception.UsernameAlreadyExistException;
 import com.herms.taskme.model.Media;
 import com.herms.taskme.model.User;
 import com.herms.taskme.repository.MediaRepository;
-import com.herms.taskme.repository.ParamRepository;
 import com.herms.taskme.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ParamRepository paramRepository;
-    @Autowired
     private MediaRepository mediaRepository;
+
+    public static final String DEFAULT_PROFILE_IMG_URL  = "https://res.cloudinary.com/dsonk49e9/image/upload/v1578403951/default_profile_img.png";
 
     public UserService() {
     }
@@ -43,7 +42,7 @@ public class UserService {
                 Media profilePhoto = new Media();
                 profilePhoto.setDescription("Profile picture");
                 profilePhoto.setType(Media.MEDIA_TYPE_IMG);
-                profilePhoto.setUrl(ParamRepository.DEFAULT_PROFILE_IMG_URL);
+                profilePhoto.setUrl(DEFAULT_PROFILE_IMG_URL);
                 user.setProfilePhoto(profilePhoto);
             }
             user.setCreatedOn(new Date());

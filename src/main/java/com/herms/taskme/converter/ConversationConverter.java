@@ -67,7 +67,7 @@ public class ConversationConverter{
      * This method is used to return a DTO of the Conversation model, and it has the option if the user 
      * wants a DTO with the last 20 messages of the conversation (for quick presentation purposes).
      * @param conversation original object to be DTOrized
-     * @param loadLastMessages[false] loads 20 last messages of the conversation
+     * @param loadLastMessages = false loads 20 last messages of the conversation
      * @return ConversationDTO
      */
     public ConversationDTO toConversationtDTO(Conversation conversation, boolean loadLastMessages) {
@@ -83,7 +83,6 @@ public class ConversationConverter{
 	         //This custom converter replaces the one automatically created by ModelMapper,
 	         //So we have to map each of the contact fields as well.
 	         context.getDestination().setId(context.getSource().getId());
-	         context.getDestination().setHasUnreadMessages(context.getSource().getHasUnreadMessages());
 	         context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
 	         context.getSource().getUserList().stream().forEach(user -> {
 	            context.getDestination().getUserMap().put(user.getId(), new UserDTO(user));
@@ -107,7 +106,6 @@ public class ConversationConverter{
 		         //This custom converter replaces the one automatically created by ModelMapper,
 		         //So we have to map each of the contact fields as well.
 		         context.getDestination().setId(context.getSource().getId());
-		         context.getDestination().setHasUnreadMessages(context.getSource().getHasUnreadMessages());
 		         context.getDestination().setCreatedOn(context.getSource().getCreatedOn());
 
 //		         for (Entry<Long, UserDTO> entry : context.getSource().getUserMap().entrySet()) {

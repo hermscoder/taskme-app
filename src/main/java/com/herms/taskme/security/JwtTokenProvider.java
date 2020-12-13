@@ -30,7 +30,7 @@ public class JwtTokenProvider {
         claims.put("id", userPrincipal.getId());
 
         return Jwts.builder()
-//                .setSubject(userPrincipal.getUsername())
+                .setSubject(userPrincipal.getUsername())
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)

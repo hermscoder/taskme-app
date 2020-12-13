@@ -10,7 +10,6 @@ import java.util.Map;
 public class ConversationDTO extends DataTransferObject {
 
     private Long id;
-    private Boolean hasUnreadMessages;
     private List<MessageDTO> messagesList;
     private Map<Long, UserDTO> userMap;
     private Date createdOn;
@@ -43,12 +42,6 @@ public class ConversationDTO extends DataTransferObject {
 		this.userMap = userMap;
 	}
 
-	public Boolean getHasUnreadMessages() {
-		return hasUnreadMessages;
-	}
-	public void setHasUnreadMessages(Boolean hasUnreadMessages) {
-		this.hasUnreadMessages = hasUnreadMessages;
-	}
 
 	public Date getCreatedOn() {
 		return createdOn;
@@ -69,7 +62,6 @@ public class ConversationDTO extends DataTransferObject {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((createdOn == null) ? 0 : createdOn.hashCode());
-		result = prime * result + ((hasUnreadMessages == null) ? 0 : hasUnreadMessages.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((messagesList == null) ? 0 : messagesList.hashCode());
 		return result;
@@ -88,11 +80,6 @@ public class ConversationDTO extends DataTransferObject {
 			if (other.createdOn != null)
 				return false;
 		} else if (!createdOn.equals(other.createdOn))
-			return false;
-		if (hasUnreadMessages == null) {
-			if (other.hasUnreadMessages != null)
-				return false;
-		} else if (!hasUnreadMessages.equals(other.hasUnreadMessages))
 			return false;
 		if (id == null) {
 			if (other.id != null)

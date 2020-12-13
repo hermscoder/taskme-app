@@ -48,4 +48,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         return principal;
     }
+
+    public boolean checkIfUserHasRightToOperation(User userToCheck) {
+        User principal = getLoggedUser();
+        if (principal == null || userToCheck == null || !userToCheck.getId().equals(principal.getId())) {
+            return false;
+        }
+        return true;
+    }
 }

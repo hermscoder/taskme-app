@@ -35,6 +35,9 @@ public class UserDTO extends DataTransferObject  {
 
     private Double rateAvg;
 
+    private String description;
+
+
     public UserDTO() {
 
     }
@@ -53,6 +56,8 @@ public class UserDTO extends DataTransferObject  {
 
         Period diff = Period.between(Converter.convertToLocalDateViaSqlDate(user.getBirthDate()), LocalDate.now());
         this.age = diff.getYears();
+
+        this.description = user.getDescription();
     }
 
     public Long getId() {
@@ -149,6 +154,14 @@ public class UserDTO extends DataTransferObject  {
 
     public void setRateAvg(Double rateAvg) {
         this.rateAvg = rateAvg;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
