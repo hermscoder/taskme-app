@@ -58,7 +58,7 @@ public class User implements Serializable {
     @Column(name = "NUM_RATES")
     private Integer numberOfRates = 0;
     @Size(min = 1, max = 1000)
-    @Column(name = "DESCRIPTION", nullable = false)
+    @Column(name = "DESCRIPTION")
     private String description;
 
     public User(){
