@@ -119,7 +119,7 @@ public class TaskSomeoneController {
     public ResponseEntity<TaskSomeone> addMediaToTaskSomeone(@RequestParam("file") MultipartFile[] multipartFiles, @PathVariable Long id) throws Exception {
 
         TaskSomeone taskSomeone = taskSomeoneService.getTaskSomeone(id);
-        if (customUserDetailsService.checkIfUserHasRightToOperation(taskSomeone.getUser())) {
+        if (!customUserDetailsService.checkIfUserHasRightToOperation(taskSomeone.getUser())) {
             throw new Exception("You don't have access to this function");
         }
 
