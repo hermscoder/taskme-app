@@ -5,10 +5,7 @@ import com.herms.taskme.dto.MessageDTO;
 import com.herms.taskme.enums.ApplicationStatus;
 import com.herms.taskme.enums.FrequencyEnum;
 import com.herms.taskme.enums.TaskState;
-import com.herms.taskme.model.Media;
-import com.herms.taskme.model.TaskApplication;
-import com.herms.taskme.model.TaskSomeone;
-import com.herms.taskme.model.User;
+import com.herms.taskme.model.*;
 import com.herms.taskme.repository.TaskSomeoneRepository;
 import com.herms.taskme.util.DateUtils;
 import org.modelmapper.ModelMapper;
@@ -106,12 +103,16 @@ public class TaskSomeoneService {
     	}
 
     	List<TaskSomeone> subtasks = original.getSubTasksList();
+    	List<Comment> commentList = original.getCommentList();
+
     	TaskSomeone parent = original.getParentTask();
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(taskSomeone, original);
 
         original.setSubTasksList(subtasks);
         original.setParentTask(parent);
+        original.setCommentList(commentList);
+
         return taskSomeoneRepository.save(original);
     }
 

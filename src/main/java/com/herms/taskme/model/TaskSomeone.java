@@ -80,6 +80,7 @@ public class TaskSomeone implements Serializable{
         mediaList = new ArrayList<>();
         participants = new ArrayList<>();
         subTasksList = new ArrayList<>();
+        commentList = new ArrayList<>();
     }
 
     public Long getId() {
