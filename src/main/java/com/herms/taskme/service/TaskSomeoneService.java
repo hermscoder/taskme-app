@@ -247,7 +247,7 @@ public class TaskSomeoneService {
                     .filter(st -> st.getState().equals(TaskState.CREATED))
                     .collect(Collectors.toList());
             if(!notDoneSubTask.isEmpty()) {
-                throw new Exception("There is unfinished subtasks! In order to conclude this task, all the subtasks must be DONE or CANCELLED");
+                throw new Exception("There is unfinished subtasks! In order to conclude this task, all the subtasks must be DONE(or CANCELLED).");
             }
         }
     }
