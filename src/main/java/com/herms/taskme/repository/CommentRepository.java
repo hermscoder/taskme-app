@@ -13,5 +13,5 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends CrudRepository<Comment, Long>, PagingAndSortingRepository<Comment, Long> {
-    public Page<Comment> findAllByTaskSomeoneIdOrderBySentTimeDesc(Pageable pageable, Long taskSomeoneId);
+    public Page<Comment> findAllByTaskSomeoneIdOrderBySentTimeAsc(Pageable pageable, Long taskSomeoneId);
 }

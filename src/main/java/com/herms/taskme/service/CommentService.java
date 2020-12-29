@@ -27,7 +27,7 @@ public class CommentService {
     }
 
     public Page<Comment> getAllCommentsFromTask(Pageable pageable, Long tasksomeoneId) {
-        return commentRepository.findAllByTaskSomeoneIdOrderBySentTimeDesc(pageable, tasksomeoneId);
+        return commentRepository.findAllByTaskSomeoneIdOrderBySentTimeAsc(pageable, tasksomeoneId);
     }
 
     public Comment addComment(CommentDTO commentDTO) throws Exception {
