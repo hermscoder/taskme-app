@@ -219,7 +219,7 @@ public class TaskSomeoneService {
             boolean beforeTodayTask = subtask.getEndDate().before(new Date());
             //if the subtask was before the parent task start date or before today, and its on the DONE state,
             // we DONT remove, because it means that the task was touched, and maybe there is important
-            //information there. But the user can delete if those old subtasks if he wants to
+            //information there. But the user can delete those old subtasks if he wants to
             if( (beforeStartDateTask || beforeTodayTask) && subtask.getState().equals(TaskState.DONE) ) {
                 continue;
             }
